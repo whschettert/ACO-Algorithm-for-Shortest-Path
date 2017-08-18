@@ -8,11 +8,13 @@ class Main:
 
         start_time = time.time()
     
-        gp.build_graph_stop_points(15)
+        gp.build_graph_stop_points(-1)
 
         elapsed_time = time.time() - start_time
 
         print("Time build graph %.2f seconds.", elapsed_time)
+
+        gp.astar()
 
         gp.draw_graph()
 

@@ -80,6 +80,15 @@ class Graph:
 
             lastNode = None
 
+    def astar(self):
+        resp = nx.astar_path(self.graph, '1S0', '3S2', self.h)
+        print resp
+
+    def h(self, a, b):
+        n1 = self.graph.node[a]['data']
+        n2 = self.graph.node[b]['data']
+        return util.haversine(n1[3], n1[4], n2[3], n2[4])
+
     def draw_map(self):
         points = []
 
