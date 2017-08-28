@@ -8,7 +8,7 @@ import maps as mp
 class Graph:
 
     def __init__(self):
-        self.graph = nx.Graph()
+        self.graph = nx.DiGraph()
 
     def build_generic(self, max_routes):
         #TODO: considerar duas trips(direction=0 & direction=1)
@@ -51,38 +51,55 @@ class Graph:
 
         for rt in routes.values:
             
-            trip = data.TRIPS[(data.TRIPS['route_id'] == rt[0]) & (data.TRIPS['direction_id'] == 0)].head(1).values
+            trip0 = data.TRIPS[(data.TRIPS['route_id'] == rt[0]) & (data.TRIPS['direction_id'] == 0)].head(1)
+            trip1 = data.TRIPS[(data.TRIPS['route_id'] == rt[0]) & (data.TRIPS['direction_id'] == 1)].head(1)
 
-            #trip2 = data.TRIPS[(data.TRIPS['route_id'] == rt[0]) & (data.TRIPS['direction_id'] == 1)].head(1).values
+            trips = pd.concat([trip0, trip1]).values
 
-            stops = pd.merge(data.STOPS, data.STOP_TIMES[data.STOP_TIMES['trip_id'] == trip[0][2]], on='stop_id').sort_values('stop_sequence').values
+            for tr in trips:
+                
+                stops = pd.merge(data.STOPS, data.STOP_TIMES[data.STOP_TIMES['trip_id'] == tr[2]], on='stop_id').sort_values('stop_sequence').values
 
-            #stops2 = pd.merge(data.STOPS, data.STOP_TIMES[data.STOP_TIMES['trip_id'] == trip2[0][2]], on='stop_id').sort_values('stop_sequence').values
+                for st in stops:
 
-            for st in stops:
+                    # procura parada proxima a atual
+                    n = util.medium_point(self.graph, st)
 
-                # procura parada proxima a atual
-                n = util.medium_point(self.graph, st)
+                    if n == False:
+                        n = st
+                        self.graph.add_node(n[0], pos=(n[3], n[4]), data=n, nodes=[])
+                    else:
+                        n = n['data']
+                        self.graph.node[n[0]]['nodes'].append(st)
 
-                if n == False:
-                    n = st
-                    self.graph.add_node(n[0], pos=(n[3], n[4]), data=n, nodes=[])
-                else:
-                    n = n['data']
-                    self.graph.node[n[0]]['nodes'].append(st)
+                    if lastNode is not None:
+                        wgt = util.haversine(lastNode[4], lastNode[3], n[4], n[3])
+                        time = util.time_diff(lastNode[7], n[7])
+                        if lastNode[0] != n[0]:
+                            self.graph.add_edge(lastNode[0], n[0], weight=wgt, travelTime=time)
 
-                if lastNode is not None:
-                    wgt = util.haversine(lastNode[4], lastNode[3], n[4], n[3])
-                    if lastNode[0] != n[0]:
-                        self.graph.add_edge(lastNode[0], n[0], weight=wgt)
-
-                lastNode = n
+                    lastNode = n
 
             lastNode = None
 
-    def astar(self):
-        resp = nx.astar_path(self.graph, '1S0', '3S2', self.h)
-        print resp
+    def astar(self, n1, n2):
+        resp = None
+        try:
+            resp = nx.astar_path(self.graph, n1, n2, self.h, weight='travelTime')
+        except nx.NetworkXNoPath:
+            resp = "Nao ha caminho entre os nodos"
+        finally:
+            return resp
+
+    def get_graph(self):
+        return self.graph
+
+    # def save(self):
+    #     pickle.dump(self.graph, open('/tmp/graph.txt', 'w'))
+
+    # def read(self):
+    #     dg = pickle.load(open('/tmp/graph.txt'))
+    #     print dg.edges()
 
     def h(self, a, b):
         n1 = self.graph.node[a]['data']
