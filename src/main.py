@@ -15,9 +15,21 @@ class Main:
 
         print("Time build graph %.2f seconds.", elapsed_time)
 
-        print 'Menor caminho:', gp.astar('1S0', '1S1')
+        #gp.draw_graph()
 
-        gp.draw_graph()
+        while True:
+            input = raw_input('Nodos(origem,destino) >>')
+            args = input.split(',')
 
+            print 'Menor caminho(path, custo):', gp.astar(args[0], args[1])
+        
 if __name__ == "__main__":
-    main = Main()
+    
+    try:
+        main = Main()    
+    except KeyboardInterrupt as k:
+        pass
+    except Exception as e:
+        raise e
+    finally:
+        print '\nexiting'

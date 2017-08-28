@@ -9,6 +9,7 @@ class Graph:
 
     def __init__(self):
         self.graph = nx.DiGraph()
+        self.nodes_dict = dict()
 
     def build_graph_stop_points(self, max_routes):
         lastNode = None
@@ -20,6 +21,7 @@ class Graph:
 
         for rt in routes.values:
             
+            # duas viagens para cada rota, uma de ida e outra de volta(algumas rotas nao possuem volta)
             trip0 = data.TRIPS[(data.TRIPS['route_id'] == rt[0]) & (data.TRIPS['direction_id'] == 0)].head(1)
             trip1 = data.TRIPS[(data.TRIPS['route_id'] == rt[0]) & (data.TRIPS['direction_id'] == 1)].head(1)
 
@@ -40,6 +42,7 @@ class Graph:
                     else:
                         n = n['data']
                         self.graph.node[n[0]]['nodes'].append(st)
+                        self.nodes_dict[st[0]] = n[0]
 
                     if lastNode is not None:
                         wgt = util.haversine(lastNode[4], lastNode[3], n[4], n[3])
@@ -53,12 +56,23 @@ class Graph:
 
     def astar(self, n1, n2):
         resp = None
+        length = None
+
+        # verifica se nodos foram clusterizados(menos de 300metros)
+        if n1 in self.nodes_dict:
+            n1 = self.nodes_dict[n1]
+        if n2 in self.nodes_dict:
+            n2 = self.nodes_dict[n2]
+
         try:
-            resp = nx.astar_path(self.graph, n1, n2, self.h, weight='travelTime')
+            resp = nx.astar_path(self.graph, n1, n2, self.h, weight='travelTime') #weight='travelTime'
+            length = nx.astar_path_length(self.graph, n1, n2, self.h, weight='travelTime') #weight='travelTime'
+
         except nx.NetworkXNoPath:
-            resp = "Nao ha caminho entre os nodos"
+            print 'Nao ha caminho entre os nodos'
+            resp = []
         finally:
-            return resp
+            return resp, length
 
     def get_graph(self):
         return self.graph
@@ -75,28 +89,11 @@ class Graph:
         n2 = self.graph.node[b]['data']
         return util.haversine(n1[3], n1[4], n2[3], n2[4])
 
-    def draw_map(self):
-        points = []
-
-        maps = mp.Maps()
-
-        for rt in data.ROUTES[data.ROUTES['route_id'] == 2].head(1).values:
-            
-            trip = data.TRIPS[data.TRIPS['route_id'] == rt[0]].head(1).values
-
-            stops = pd.merge(data.STOPS, data.STOP_TIMES[data.STOP_TIMES['trip_id'] == trip[0][2]], on='stop_id').sort_values('stop_sequence').values
-
-            for st in stops:
-                points.append(st)
-            
-            maps.draw_route(points)
-            
-
     def draw_graph(self):
         if (len(self.graph) < 2000):
             pos = nx.get_node_attributes(self.graph,'pos')
             nx.draw_networkx(self.graph, pos)
-            labels = nx.get_edge_attributes(self.graph,'weight')
+            labels = nx.get_edge_attributes(self.graph,'travelTime')
             nx.draw_networkx_edge_labels(self.graph, pos,edge_labels=labels)
 
             plt.xlabel('Latitude', fontsize=23)
