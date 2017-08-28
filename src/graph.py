@@ -10,37 +10,6 @@ class Graph:
     def __init__(self):
         self.graph = nx.DiGraph()
 
-    def build_generic(self, max_routes):
-        #TODO: considerar duas trips(direction=0 & direction=1)
-
-        lastNode = None
-
-        if (max_routes > 0):
-            routes = data.ROUTES.head(max_routes)
-        else:
-            routes = data.ROUTES
-
-        for rt in routes.values:
-            
-            trip = data.TRIPS[data.TRIPS['route_id'] == rt[0]].head(1).values
-
-            stops = pd.merge(data.STOPS, data.STOP_TIMES[data.STOP_TIMES['trip_id'] == trip[0][2]], on='stop_id').sort_values('stop_sequence').values
-
-            for st in stops:
-
-                node = util.mediumPoint(self.graph, st[3], st[4])
-
-                if node is None:
-                    self.graph.add_node(st[0], pos=(st[3],st[4]))
-                    node = st[0]
-
-                if (lastNode is not None):
-                    wgt = util.haversine(lastNode[3], lastNode[4], st[3], st[4])
-                    self.graph.add_edge(lastNode[0], st[0], weight=wgt)
-
-
-            lastNode = None
-
     def build_graph_stop_points(self, max_routes):
         lastNode = None
 
