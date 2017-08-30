@@ -1,4 +1,5 @@
 from math import radians, cos, sin, asin, sqrt
+from datetime import datetime
 
 AVG_EARTH_RADIUS = 6371
 
@@ -22,4 +23,6 @@ def medium_point(graph, current):
     return False
 
 def time_diff(time1, time2):
-    return 2-1
+    FMT = '%H:%M:%S'
+    tdelta = datetime.strptime(time2, FMT) - datetime.strptime(time1, FMT)
+    return tdelta.seconds

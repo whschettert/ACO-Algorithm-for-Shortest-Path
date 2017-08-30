@@ -1,5 +1,6 @@
 import graph as graph
 import time
+import pickle
 
 class Main:
 
@@ -8,15 +9,27 @@ class Main:
 
         start_time = time.time()
     
-        gp.build_graph_stop_points(-1)
+        gp.build_graph_stop_points(15)
 
         elapsed_time = time.time() - start_time
 
         print("Time build graph %.2f seconds.", elapsed_time)
 
-        gp.astar()
+        #gp.draw_graph()
 
-        gp.draw_graph()
+        while True:
+            input = raw_input('Nodos(origem,destino) >>')
+            args = input.split(',')
 
+            print 'Menor caminho(path, custo):', gp.astar(args[0], args[1])
+        
 if __name__ == "__main__":
-    main = Main()
+    
+    try:
+        main = Main()    
+    except KeyboardInterrupt as k:
+        pass
+    except Exception as e:
+        raise e
+    finally:
+        print '\nexiting'
