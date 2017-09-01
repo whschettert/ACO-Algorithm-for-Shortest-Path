@@ -3,42 +3,74 @@ import random as rand
 
 class tabu:
     def euc_2d(c1, c2):
-        return self.math.sqrt((c1[0] - c2[0])**2.0 + (c1[1] - c2[1])**2.0).round
+        return math.sqrt((c1[0] - c2[0])**2.0 + (c1[1] - c2[1])**2.0).round
 
 
     def cost(perm, cities):
         distance = 0
-        for c1 in self.perm #.each_with_index do |c1, i|
-            c2 = (i == self.perm.size-1) ? self.perm[0] : self.perm[i+1]
+        for c1 in perm: #.each_with_index do |c1, i| /// para cada index c1 (chave), i (valor)
+            c2 = (c1 == len(perm-1) ? perm[0] : perm[c1+1]
+            #troquei os 'i's por c1 na linha de cima
             distance += self.euc_2d(cities[c1], cities[c2])
         
         return distance
 
 
     def random_permutation(cities):
-        perm = Array.new(self.cities.size){|i| i}
-        perm.each_index do |i|
-            r = rand(perm.size-i) + i
-            perm[r], perm[i] = perm[i], perm[r]
+        perm = None
+        for n in cities:
+            i = 0
+            perm.append(i)
+            i++
+        
+        #isso em baixo virou aquilo em cima
+        #perm = array(self.cities.length){|i| i}
+
+        #perm.each_index do |i|
+        for i in range(0,len(perm)):
+            #r = rand(perm.size-i) + i
+            r = rand.randint(0,len(perm-i)) + i
+            auxList[r] = perm[r]
+            perm[r] = perm[i]
+            perm[i] = auxList[r]
+            #perm[r], perm[i] = perm[i], perm[r] essa associação paralela virou aquilo
         
         return perm
 
 
     def stochastic_two_opt(parent):
-        perm = self.parent  #Array.new(parent)
-        c1, c2 = rand.randrange(self.perm.size), rand.randrange(self.perm.size)
+        perm = parent  #Array.new(parent)
+        #c1, c2 = rand.randrange(perm.size), rand.randrange(perm.size)
+        c1 = rand.randrange(len(perm))
+        c2 = rand.randrange(len(perm))
         exclude = [c1]
         exclude << ((c1==0) ? perm.size-1 : c1-1)
         exclude << ((c1==perm.size-1) ? 0 : c1+1)
-        c2 = rand(perm.size) while exclude.include?(c2)
-        c1, c2 = c2, c1 if c2 < c1
+
+        #como fazer as linhas de cima?
+
+        #c2 = rand(perm.size) while exclude.include?(c2) -> parecido com contains
+        #linha decima significa Executa Codigo WHILE condição
+        c2 = rand.randrange(len(perm))
+        while exclude.__contains__(c2):
+            c2 = rand.randrange(len(perm))
+
+        if c2 < c1:
+            auxInt = c2
+            c2 = c1
+            c1 = auxInt
+
+        #c1, c2 = c2, c1 if c2 < c1
+        
         perm[c1...c2] = perm[c1...c2].reverse
         return perm, [[parent[c1-1], parent[c1]], [parent[c2-1], parent[c2]]]
 
 
     def is_tabu(permutation, tabu_list):
-        permutation.each_with_index do |c1, i|
-            c2 = (i==permutation.size-1) ? permutation[0] : permutation[i+1]
+        #permutation.each_with_index do |c1, i|
+        for c1 in permutation:
+            
+            c2 = (c1==len(permutation)-1) ? permutation[0] : permutation[c1+1]
             tabu_list.each do |forbidden_edge|
             return true if forbidden_edge == [c1, c2]
             
@@ -74,7 +106,7 @@ class tabu:
             best_candidate_edges.each {|edge| tabu_list.push(edge)}
             tabu_list.pop while tabu_list.size > tabu_list_size
             
-            puts " > iteration #{(iter+1)}, best=#{best[:cost]}"
+            print() #puts " > iteration #{(iter+1)}, best=#{best[:cost]}"
         
         return best
         
