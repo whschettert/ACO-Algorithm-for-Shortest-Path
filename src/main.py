@@ -1,6 +1,7 @@
 import graph as graph
 import time
 import pickle
+from ant_colony import *
 
 class Main:
 
@@ -9,7 +10,13 @@ class Main:
 
         start_time = time.time()
     
-        gp.build_graph_stop_points(15)
+        gp.build_graph_stop_points(2)
+
+        # gp.save()
+
+        aco = AntColonyOptimization(5, 1, 5, 0.5)
+
+        # aco.run(gp, '1S0', '1S4')
 
         elapsed_time = time.time() - start_time
 
@@ -19,9 +26,14 @@ class Main:
 
         while True:
             input = raw_input('Nodos(origem,destino) >>')
+
+            if input == 'exit':
+                break
+
             args = input.split(',')
 
-            print 'Menor caminho(path, custo):', gp.astar(args[0], args[1])
+            print 'A* (path, custo):', gp.astar(args[0], args[1])
+            print 'ACO (path, custo):', aco.run(gp, args[0], args[1])
         
 if __name__ == "__main__":
     

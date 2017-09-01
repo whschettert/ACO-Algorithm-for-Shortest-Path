@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import data_import as data
 import util as util
 import maps as mp
+import json
 
 class Graph:
 
@@ -65,20 +66,29 @@ class Graph:
             n2 = self.nodes_dict[n2]
 
         try:
-            resp = nx.astar_path(self.graph, n1, n2, self.h, weight='travelTime') #weight='travelTime'
-            length = nx.astar_path_length(self.graph, n1, n2, self.h, weight='travelTime') #weight='travelTime'
+            resp = nx.astar_path(self.graph, n1, n2, self.h)
+            length = nx.astar_path_length(self.graph, n1, n2, self.h)
 
         except nx.NetworkXNoPath:
-            print 'Nao ha caminho entre os nodos'
-            resp = []
+             print 'Nao ha caminho entre os nodos'
+             resp = []
         finally:
             return resp, length
 
     def get_graph(self):
         return self.graph
 
-    # def save(self):
-    #     pickle.dump(self.graph, open('/tmp/graph.txt', 'w'))
+    def save(self):
+        f = open('graph.txt', 'w') 
+
+        # nodes = json.dumps(self.graph)
+
+        # edges = self.graph.edges()
+        
+        # for n in self.graph.node:
+        #     node = self.graph.node[n]
+            
+            
 
     # def read(self):
     #     dg = pickle.load(open('/tmp/graph.txt'))
@@ -93,7 +103,7 @@ class Graph:
         if (len(self.graph) < 2000):
             pos = nx.get_node_attributes(self.graph,'pos')
             nx.draw_networkx(self.graph, pos)
-            labels = nx.get_edge_attributes(self.graph,'travelTime')
+            labels = nx.get_edge_attributes(self.graph,'weight')
             nx.draw_networkx_edge_labels(self.graph, pos,edge_labels=labels)
 
             plt.xlabel('Latitude', fontsize=23)
