@@ -1,9 +1,10 @@
-import googlemaps
+#import googlemaps
 
 class Maps:
 
     def __init__(self):
-        self.gmaps = googlemaps.Client(key='AIzaSyBqtbWLMUfuX0e9DcirWwY1fpSjiwS8BeU')
+       # self.gmaps = googlemaps.Client(key='AIzaSyBqtbWLMUfuX0e9DcirWwY1fpSjiwS8BeU')
+       x =1
 
     def draw_route(self, routePoints):
         print(routePoints)

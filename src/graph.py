@@ -3,7 +3,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import data_import as data
 import util as util
-import maps as mp
+import maps as mpx
+import Queue
 
 class Graph:
 
@@ -93,7 +94,7 @@ class Graph:
         if (len(self.graph) < 2000):
             pos = nx.get_node_attributes(self.graph,'pos')
             nx.draw_networkx(self.graph, pos)
-            labels = nx.get_edge_attributes(self.graph,'travelTime')
+            labels = nx.get_edge_attributes(self.graph,'weight')
             nx.draw_networkx_edge_labels(self.graph, pos,edge_labels=labels)
 
             plt.xlabel('Latitude', fontsize=23)
@@ -102,3 +103,31 @@ class Graph:
             plt.show()
         else:
             print('Nodes :', len(self.graph))
+
+
+    
+    def a_star_search(self, start, goal):       
+
+        frontier = Queue.PriorityQueue()
+        frontier.put(start, 0)
+        came_from = {}
+        cost_so_far = {}
+        came_from[start] = None
+        cost_so_far[start] = 0
+        
+        while not frontier.empty():
+            current = frontier.get()
+            
+            if current == goal:
+                break
+            
+            for next in self.graph.neighbors(current):
+                new_cost = cost_so_far[current] + self.graph.edge[current][next]['weight']
+                if next not in cost_so_far or new_cost < cost_so_far[next]:
+                    cost_so_far[next] = new_cost
+                    priority = new_cost + self.h(goal, next)
+                    frontier.put(next, priority)
+                    came_from[next] = current                    
+        
+        return came_from, cost_so_far
+    
