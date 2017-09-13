@@ -5,12 +5,14 @@ import data_import as data
 import util as util
 import maps as mpx
 import Queue
+import astar as ast
 
 class Graph:
 
     def __init__(self):
         self.graph = nx.DiGraph()
         self.nodes_dict = dict()
+        self.nodes_dict_rev = dict()
 
     def build_graph_stop_points(self, max_routes):
         lastNode = None
@@ -45,6 +47,11 @@ class Graph:
                         self.graph.node[n[0]]['nodes'].append(st)
                         self.nodes_dict[st[0]] = n[0]
 
+                        if n[0] in self.nodes_dict_rev:
+                            self.nodes_dict_rev[n[0]].append(st[0])
+                        else:
+                            self.nodes_dict_rev[n[0]] = [st[0]]
+
                     if lastNode is not None:
                         wgt = util.haversine(lastNode[4], lastNode[3], n[4], n[3])
                         time = util.time_diff(lastNode[7], n[7])
@@ -66,14 +73,15 @@ class Graph:
             n2 = self.nodes_dict[n2]
 
         try:
-            resp = nx.astar_path(self.graph, n1, n2, self.h, weight='travelTime') #weight='travelTime'
-            length = nx.astar_path_length(self.graph, n1, n2, self.h, weight='travelTime') #weight='travelTime'
+            resp0 = nx.astar_path_length(self.graph, n1, n2, self.h)
+            resp = ast.astar_path(self.graph, n1, n2, self.nodes_dict_rev, self.h, weight='travelTime') #weight='travelTime'
+            length = ast.astar_path_length(self.graph, n1, n2, self.nodes_dict_rev, self.h, weight='travelTime') #weight='travelTime'
 
         except nx.NetworkXNoPath:
             print 'Nao ha caminho entre os nodos'
             resp = []
         finally:
-            return resp, length
+            return resp, length, resp0
 
     def get_graph(self):
         return self.graph

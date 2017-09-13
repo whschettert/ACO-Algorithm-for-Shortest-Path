@@ -9,7 +9,7 @@ class Main:
 
         start_time = time.time()
     
-        gp.build_graph_stop_points(5)
+        gp.build_graph_stop_points(15)
 
         elapsed_time = time.time() - start_time
 
@@ -18,10 +18,10 @@ class Main:
        # gp.draw_graph()
 
         while True:
-            input = raw_input('Nodos(origem,destino) >>')
-            args = input.split(',')
-
-            print 'Menor caminho(path, custo):', gp.a_star_search(args[0], args[1])
+            #input = raw_input('Nodos(origem,destino) >>')
+            #args = input.split(',')
+            args = ['1S9','8S13']
+            print 'Menor caminho(path, custo, custoKm):', gp.astar(args[0], args[1])
         
 if __name__ == "__main__":
     
