@@ -25,22 +25,10 @@ class Main:
        # gp.draw_graph()
 
         while True:
-<<<<<<< HEAD
             #input = raw_input('Nodos(origem,destino) >>')
             #args = input.split(',')
             args = ['1S9','8S13']
             print 'Menor caminho(path, custo, custoKm):', gp.astar(args[0], args[1])
-=======
-            input = raw_input('Nodos(origem,destino) >>')
-
-            if input == 'exit':
-                break
-
-            args = input.split(',')
-
-            print 'A* (path, custo):', gp.astar(args[0], args[1])
-            print 'ACO (path, custo):', aco.run(gp, args[0], args[1])
->>>>>>> 97fec692ce7de81d05208d0bcdc7528511c2daf3
         
 if __name__ == "__main__":
     

@@ -3,14 +3,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import data_import as data
 import util as util
-<<<<<<< HEAD
 import maps as mpx
 import Queue
 import astar as ast
-=======
-import maps as mp
-import json
->>>>>>> 97fec692ce7de81d05208d0bcdc7528511c2daf3
 
 class Graph:
 
@@ -78,14 +73,9 @@ class Graph:
             n2 = self.nodes_dict[n2]
 
         try:
-<<<<<<< HEAD
             resp0 = nx.astar_path_length(self.graph, n1, n2, self.h)
             resp = ast.astar_path(self.graph, n1, n2, self.nodes_dict_rev, self.h, weight='travelTime') #weight='travelTime'
             length = ast.astar_path_length(self.graph, n1, n2, self.nodes_dict_rev, self.h, weight='travelTime') #weight='travelTime'
-=======
-            resp = nx.astar_path(self.graph, n1, n2, self.h)
-            length = nx.astar_path_length(self.graph, n1, n2, self.h)
->>>>>>> 97fec692ce7de81d05208d0bcdc7528511c2daf3
 
         except nx.NetworkXNoPath:
              print 'Nao ha caminho entre os nodos'
