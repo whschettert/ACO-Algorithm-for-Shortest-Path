@@ -65,7 +65,8 @@ class Graph:
     def astar(self, n1, n2):
         resp = None
         length = None
-
+        resp0 = None
+        
         # verifica se nodos foram clusterizados(menos de 300metros)
         if n1 in self.nodes_dict:
             n1 = self.nodes_dict[n1]

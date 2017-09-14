@@ -12,7 +12,7 @@
 """
 from heapq import heappush, heappop
 from itertools import count
-from util import *
+import util as util
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -119,16 +119,19 @@ def astar_path(G, source, target, dic, heuristic=None, weight='weight'):
             if neighbor in explored:
                 continue
 
-            # abrir dicionario e verificar 
-            if neighbor in dic:
-                # significa que eh cluster
-                l = G.node[neighbor]['nodes']
+            #  se a minha rota for diferente da rota do meu vizinho
+            if G.node[curnode]['data'][5] != G.node[neighbor]['data'][5]:
 
-                n = filter(lambda x : x[5] == G.node[curnode]['data'][0], l)
+                # abrir dicionario e verificar quem tem a rota do vizinho 
+                if curnode in dic:
+                    
+                    l = G.node[curnode]['nodes']
 
-                if len(n) > 0:
+                    n = filter(lambda x : x[5] == G.node[neighbor]['data'][5], l)
 
-                    w['travelTime'] = util.time_diff(n[0][7] ,n[0][7])
+                    if len(n) > 0:
+
+                        w['travelTime'] = util.time_diff(n[0][7] , G.node[neighbor]['data'][7])
 
 
 
