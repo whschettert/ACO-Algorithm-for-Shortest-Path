@@ -19,8 +19,8 @@ def medium_point(graph, current):
         n = graph.node[node]
         wgt = haversine(n['data'][3], n['data'][4], current[3], current[4])
         if wgt <= 0.3 and current[0] != node:
-            return n
-    return False
+            return n, wgt
+    return False, None
 
 def time_diff(time1, time2):
     FMT = '%H:%M:%S'
