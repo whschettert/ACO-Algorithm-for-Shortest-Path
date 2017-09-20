@@ -59,8 +59,8 @@ class Graph:
             if n and not self.nodes_connected(node, n['data'][0]) and not self.nodes_connected(n['data'][0], node):
                 time = dist / 0.00166667
                 # duas arestas direcionais
-                self.graph.add_edge(node_data[0], n['data'][0], weight=dist, traveltime=time)
-                self.graph.add_edge(n['data'][0], node_data[0], weight=dist, traveltime=time)
+                self.graph.add_edge(node_data[0], n['data'][0], weight=dist, travelTime=time)
+                self.graph.add_edge(n['data'][0], node_data[0], weight=dist, travelTime=time)
 
     def nodes_connected(self, n1, n2):
         return n1 in self.graph.neighbors(n2)
