@@ -27,10 +27,10 @@ class Main:
         print 'A* Menor caminho DISTANCIA(path, custo):', gp.astar(args[0], args[1], 'weight')
         print 'A* Menor caminho TEMPO(path, custo):', gp.astar(args[0], args[1], 'travelTime')
 
-        aco = Aco(gp.graph, 0.1, 1, 5, 0.5)
+        aco = Aco(gp.graph, 0.01, 1, 5, 0.5)
         print 'ACO Menor caminho DISTANCIA(path, custo) ,', aco.run(10, 10, args[0], args[1], 'weight')
 
-        aco = Aco(gp.graph, 0.1, 1, 5, 0.5)
+        aco = Aco(gp.graph, 0.01, 1, 5, 0.5)
         print 'ACO Menor caminho TEMPO(path, custo) ,', aco.run(10, 10, args[0], args[1], 'travelTime')
 
         gp.draw_graph()

@@ -15,6 +15,8 @@ class Aco:
 
     def __init__(self, graph, initial_pheromone, alpha, beta, evaporation):
 
+        self.initial_pheromone = initial_pheromone
+
         self.min_pheromone = 0.1
 
         self.max_pheromone = 10
@@ -51,14 +53,12 @@ class Aco:
 
                     ant.visited_nodes.append(ant.current_node)
 
-                    cur, next = self.select_next_node(ant.current_node, ant)
+                    next = self.select_next_node(ant.current_node, ant)
 
                     if not next:
                         break
 
                     edge = self.graph.edge[ant.current_node][next]
-                    
-                    edge['pheromone'] += 1
 
                     ant.edges.append(ant.current_node + next)
 
@@ -107,20 +107,21 @@ class Aco:
     def select_next_node(self, current_node, ant):
 
         if len(self.graph.edge[current_node]) == 0:
-            return None, None
+            return None
         else:
             best = -1
-            result = None, None
+            result = None
 
-            for e in self.graph.edge[current_node]:
-                 if not e in ant.visited_nodes:
-                    current = self.compute_coeffi(current_node, e, ant)
+            for neighbor in self.graph.edge[current_node]:
+                 if not neighbor in ant.visited_nodes:
+
+                    current = self.compute_coeffi(current_node, neighbor, ant)
 
                     if current > best:
                         best = current
-                        result = current_node, e
+                        result = neighbor
                     elif current == best and random.randint(0, 10) > 5:
-                        result = current_node, e
+                        result = neighbor
 
         return result
 
@@ -153,7 +154,7 @@ class Aco:
                 edge = self.graph.edge[i][j]
 
                 if not 'pheromone' in edge:
-                    edge['pheromone'] = 0
+                    edge['pheromone'] = self.initial_pheromone
 
                 pheromone = edge['pheromone']
 
@@ -165,11 +166,11 @@ class Aco:
 
                 edge['pheromone'] = (1.0 - self.evaporation) * pheromone + sum
 
-                if edge['pheromone'] < self.min_pheromone:
-                    edge['pheromone'] = self.min_pheromone
+                # if edge['pheromone'] < self.min_pheromone:
+                #     edge['pheromone'] = self.min_pheromone
 
-                if edge['pheromone'] > self.max_pheromone:
-                    edge['pheromone'] = self.max_pheromone
+                # if edge['pheromone'] > self.max_pheromone:
+                #     edge['pheromone'] = self.max_pheromone
 
     def get_pheromone(self, source, target):
         edge = self.graph.edge[source][target]
