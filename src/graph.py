@@ -115,9 +115,14 @@ class Graph:
         return util.haversine(n1[3], n1[4], n2[3], n2[4])
 
     def h_time(self, a, b):
-        n1 = self.graph.node[a]['data']
-        n2 = self.graph.node[b]['data']
-        return util.haversine(n1[3], n1[4], n2[3], n2[4])
+        # distancia em km
+        dist = self.h_dist(a, b)
+
+        # velocidade media em km/h
+        med_speed = 24
+
+        # tempo de viagem em segundos
+        return (dist / med_speed) * 3600
 
     def draw_graph(self):
         if (len(self.graph) < 2000):
