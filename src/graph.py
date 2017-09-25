@@ -59,8 +59,8 @@ class Graph:
             if n and not self.nodes_connected(node, n['data'][0]) and not self.nodes_connected(n['data'][0], node):
                 time = dist / 0.00166667
                 # duas arestas direcionais
-                self.graph.add_edge(node_data[0], n['data'][0], weight=dist, traveltime=time)
-                self.graph.add_edge(n['data'][0], node_data[0], weight=dist, traveltime=time)
+                self.graph.add_edge(node_data[0], n['data'][0], weight=dist, travelTime=time)
+                self.graph.add_edge(n['data'][0], node_data[0], weight=dist, travelTime=time)
 
     def nodes_connected(self, n1, n2):
         return n1 in self.graph.neighbors(n2)
@@ -115,9 +115,14 @@ class Graph:
         return util.haversine(n1[3], n1[4], n2[3], n2[4])
 
     def h_time(self, a, b):
-        n1 = self.graph.node[a]['data']
-        n2 = self.graph.node[b]['data']
-        return util.haversine(n1[3], n1[4], n2[3], n2[4])
+        # distancia em km
+        dist = self.h_dist(a, b)
+
+        # velocidade media em km/h
+        med_speed = 24
+
+        # tempo de viagem em segundos
+        return (dist / med_speed) * 3600
 
     def draw_graph(self):
         if (len(self.graph) < 2000):
