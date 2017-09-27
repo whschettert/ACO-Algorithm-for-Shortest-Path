@@ -11,6 +11,21 @@ class Ant:
         self.tour_length = 0
         self.valid = False
 
+        self.solution_path = []
+        self.cost = None
+
+    def reset(self, current_node):
+        self.current_node = current_node
+        self.visited_nodes = []
+        self.edges = []
+        self.tour_length = 0
+        self.valid = False
+
+    def new_solution(self, path, cost):
+        if not self.cost or cost < self.cost:
+            self.solution_path = path[:]
+            self.cost = cost
+
 class Aco:
 
     def __init__(self, graph, initial_pheromone, alpha, beta, evaporation):
@@ -33,29 +48,34 @@ class Aco:
 
     def run(self, num_iterations, num_ants, source, target, weight):
 
+        self.irregular_nodes = []
+
         self.graph = copy.copy(self.c_graph)
 
         self.weight = weight
 
-        ants = []
-
         for i in range(num_ants):
-            ants.append(Ant(source))
+            self.ants.append(Ant(source))
 
         for i in range(num_iterations):
 
-            # cada formiga construi solucao
-            for ant in ants:
+            for ant in self.ants:
+                ant.reset(source)
 
-                a_it = 0
+            # cada formiga constroi solucao
+            for ant in self.ants:
                  
-                while a_it < 1000:
+                for e in range(len(self.graph.edges())):
 
                     ant.visited_nodes.append(ant.current_node)
 
                     next = self.select_next_node(ant.current_node, ant)
 
+                    # Caminho sem saida, o que fazer?
+                    # Resetar formiga? Recolocar no inicio? Marcar caminho como invalido???
                     if not next:
+                        # marcar nodos sem saida como irregulares, melhor solucao?
+                        self.irregular_nodes.append(ant.current_node)
                         break
 
                     edge = self.graph.edge[ant.current_node][next]
@@ -67,21 +87,13 @@ class Aco:
                     ant.current_node = next
 
                     if ant.current_node == target:
-                        ant.valid = True
+                        ant.visited_nodes.append(ant.current_node)
+                        # cada formiga constroi sua solucao
+                        ant.new_solution(ant.visited_nodes, ant.tour_length)
                         break
-
-                    a_it += 1
-
-            # add formigas da iteracao a solucao
-            self.ants.extend(ants)
 
             # atualiza feromonios
             self.update_pheromone()
-
-            ants = []
-
-            for i in range(num_ants):
-                ants.append(Ant(source))
 
         return self.get_solution()
 
@@ -90,17 +102,17 @@ class Aco:
         solution, cost = None, None
 
         for ant in self.ants:
-            if not ant.valid:
+            if len(ant.solution_path) == 0:
                 continue
 
             if not solution:
-                solution = ant.visited_nodes
-                cost = ant.tour_length
+                solution = ant.solution_path
+                cost = ant.cost
                 continue
             
-            if cost > ant.tour_length:
-                solution = ant.visited_nodes
-                cost = ant.tour_length
+            if ant.cost < cost:
+                solution = ant.solution_path
+                cost = ant.cost
 
         return solution, cost
 
@@ -113,7 +125,7 @@ class Aco:
             result = None
 
             for neighbor in self.graph.edge[current_node]:
-                 if not neighbor in ant.visited_nodes:
+                 if not neighbor in ant.visited_nodes and not neighbor in self.irregular_nodes:
 
                     current = self.compute_coeffi(current_node, neighbor, ant)
 
@@ -162,7 +174,7 @@ class Aco:
 
                 for ant in self.ants:                        
                     if i+j in ant.edges and ant.valid:
-                        sum += 1 / ant.tour_length
+                        sum += 1 / ant.cost
 
                 edge['pheromone'] = (1.0 - self.evaporation) * pheromone + sum
 
