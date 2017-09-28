@@ -15,6 +15,15 @@ class Graph:
         # self.nodes_dict_rev = dict()
 
     def build_graph_stop_points(self, max_routes):
+        
+        # carrega grafo salvo de arquivo, mais rapido
+        f = open('./data/graph.txt', 'r')
+        routes = f.readline()
+        f.close()
+        if len(routes) > 0 and max_routes == int(routes):    
+            self.load()
+            return
+
         lastNode = None
 
         if (max_routes > 0):
@@ -61,6 +70,8 @@ class Graph:
                 # duas arestas direcionais
                 self.graph.add_edge(node_data[0], n['data'][0], weight=dist, travelTime=time)
                 self.graph.add_edge(n['data'][0], node_data[0], weight=dist, travelTime=time)
+        
+        self.save(max_routes)
 
     def nodes_connected(self, n1, n2):
         return n1 in self.graph.neighbors(n2)
@@ -87,20 +98,6 @@ class Graph:
     def get_graph(self):
         return self.graph
 
-    def save(self):
-        f = open('graph.txt', 'w') 
-
-        # nodes = json.dumps(self.graph)
-
-        # edges = self.graph.edges()
-        
-        # for n in self.graph.node:
-        #     node = self.graph.node[n]    
-
-    # def read(self):
-    #     dg = pickle.load(open('/tmp/graph.txt'))
-    #     print dg.edges()
-
     def get_pos(self):
         arr = []
         for n in self.graph.node:
@@ -110,9 +107,9 @@ class Graph:
         return arr
 
     def h_dist(self, a, b):
-        n1 = self.graph.node[a]['data']
-        n2 = self.graph.node[b]['data']
-        return util.haversine(n1[3], n1[4], n2[3], n2[4])
+        n1 = self.graph.node[a]['pos']
+        n2 = self.graph.node[b]['pos']
+        return util.haversine(n1[0], n1[1], n2[0], n2[1])
 
     def h_time(self, a, b):
         # distancia em km
@@ -137,3 +134,50 @@ class Graph:
             plt.show()
         else:
             print('Nodes :', len(self.graph))    
+
+    def save(self, max_routes):
+        f = open('./data/graph.txt', 'w')
+
+        f.write(str(max_routes))
+        f.write('\n')
+
+        for n in self.graph.node:
+            node = self.graph.node[n]
+
+            f.write(n + '|' + str(node['pos'][0]) + '|' + str(node['pos'][1]) + '\n')
+
+        f.write("EDGE\n")
+
+        for i in self.graph.edge:
+            for j in self.graph.edge[i]:
+
+                f.write(i + '|' + j + '|' + str(self.graph.edge[i][j]['weight']) + '|' + str(self.graph.edge[i][j]['travelTime']) + '\n')
+
+        f.close()
+
+    def load(self):
+        f = open('./data/graph.txt', 'r')
+
+        f.readline()
+
+        while True:
+            line = f.readline()
+
+            if line == 'EDGE\n':
+                break
+            
+            args = line.split('|')
+            
+            self.graph.add_node(args[0], pos=(float(args[1]), float(args[2])))
+
+        while True:
+            line = f.readline()
+
+            if line == '':
+                break
+
+            args = line.split('|')
+
+            self.graph.add_edge(args[0], args[1], weight=float(args[2]), travelTime=float(args[3]))
+
+        f.close()
