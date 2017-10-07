@@ -46,7 +46,7 @@ class Aco:
 
         self.ants = []
 
-    def run(self, num_iterations, num_ants, source, target, weight):
+    def run(self, num_ants, source, target, weight):
 
         self.irregular_nodes = []
 
@@ -57,7 +57,7 @@ class Aco:
         for i in range(num_ants):
             self.ants.append(Ant(source))
 
-        for i in range(num_iterations):
+        for i in range(10):
 
             for ant in self.ants:
                 ant.reset(source)

@@ -10,7 +10,7 @@ class Main:
 
         start_time = time.time()
     
-        gp.build_graph_stop_points(2)
+        gp.build_graph_stop_points(15)
 
         # gp.save()
 
@@ -23,15 +23,15 @@ class Main:
         # while True:
             # input = raw_input('Nodos(origem,destino) >>')
             # args = input.split(',')
-        args = ['1S0','1S9']
+        args = ['1S0','8S37']
         print 'A* Menor caminho DISTANCIA(path, custo):', gp.astar(args[0], args[1], 'weight')
         print 'A* Menor caminho TEMPO(path, custo):', gp.astar(args[0], args[1], 'travelTime')
 
         aco = Aco(gp.graph, 0.01, 1, 5, 0.5)
-        print 'ACO Menor caminho DISTANCIA(path, custo) ,', aco.run(10, 10, args[0], args[1], 'weight')
+        print 'ACO Menor caminho DISTANCIA(path, custo) ,', aco.run(10, args[0], args[1], 'weight')
 
         aco = Aco(gp.graph, 0.01, 1, 5, 0.5)
-        print 'ACO Menor caminho TEMPO(path, custo) ,', aco.run(10, 10, args[0], args[1], 'travelTime')
+        print 'ACO Menor caminho TEMPO(path, custo) ,', aco.run(10, args[0], args[1], 'travelTime')
 
         gp.draw_graph()
         

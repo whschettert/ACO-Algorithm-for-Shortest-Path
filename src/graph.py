@@ -6,6 +6,9 @@ import util as util
 import maps as mpx
 import Queue
 import astar as ast
+import os
+
+dir = os.path.dirname(__file__)
 
 class Graph:
 
@@ -14,13 +17,13 @@ class Graph:
         # self.nodes_dict = dict()
         # self.nodes_dict_rev = dict()
 
-    def build_graph_stop_points(self, max_routes):
+    def build_graph_stop_points(self, max_routes, offset=0):
         
         # carrega grafo salvo de arquivo, mais rapido
-        f = open('./data/graph.txt', 'r')
-        routes = f.readline()
+        f = open(os.path.join(dir, '../data/graph.txt'), 'r')
+        graph_data = f.readline()
         f.close()
-        if len(routes) > 0 and max_routes == int(routes):    
+        if len(graph_data) > 0 and max_routes == int(graph_data):    
             self.load()
             return
 
@@ -75,6 +78,9 @@ class Graph:
 
     def nodes_connected(self, n1, n2):
         return n1 in self.graph.neighbors(n2)
+
+    def has_path(self, n1, n2):
+        return nx.has_path(self.graph, n1, n2)
 
     def astar(self, n1, n2, weight='weight'):
         resp = None
@@ -136,7 +142,7 @@ class Graph:
             print('Nodes :', len(self.graph))    
 
     def save(self, max_routes):
-        f = open('./data/graph.txt', 'w')
+        f = open(os.path.join(dir, '../data/graph.txt'), 'w')
 
         f.write(str(max_routes))
         f.write('\n')
@@ -156,7 +162,7 @@ class Graph:
         f.close()
 
     def load(self):
-        f = open('./data/graph.txt', 'r')
+        f = open(os.path.join(dir, '../data/graph.txt'), 'r')
 
         f.readline()
 
