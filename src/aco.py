@@ -2,6 +2,11 @@ import math
 import random
 import copy
 
+import os
+import time
+
+dir = os.path.dirname(__file__)
+
 class Ant:
 
     def __init__(self, current_node):
@@ -46,12 +51,14 @@ class Aco:
 
         self.ants = []
 
+        self.edges_to_update = []
+
+        self.irregular_nodes = []
+
     def run(self, num_ants, source, target, weight):
 
         # melhor formiga da iteracao atual
         best_ant = None
-
-        self.irregular_nodes = []
 
         self.graph = copy.copy(self.c_graph)
 
@@ -62,29 +69,33 @@ class Aco:
 
         self.weight = weight
 
-        for i in range(num_ants):
-            self.ants.append(Ant(source))
-
         for i in range(10):
 
-            for ant in self.ants:
-                ant.reset(source)
+            # for ant in self.ants:
+            #     ant.reset(source)
             
             best_ant = None
 
             # cada formiga constroi solucao
-            for ant in self.ants:
-                 
+            for a in range(num_ants):
+
+                if not len(self.ants) == num_ants:
+                    self.ants.append(Ant(source))
+
+                ant = self.ants[a]
+
+                ant.reset(source)
+                
+                s_time = time.time()
+
                 for e in range(len(self.graph.edges())):
 
                     ant.visited_nodes.append(ant.current_node)
 
                     next = self.select_next_node(ant.current_node, ant)
 
-                    # Caminho sem saida, o que fazer?
-                    # Resetar formiga? Recolocar no inicio? Marcar caminho como invalido???
-                    if not next:
-                        # marcar nodos sem saida como irregulares, melhor solucao?
+                    # Grafo irregular, caminho sem saida
+                    if not next or next in self.irregular_nodes:
                         self.irregular_nodes.append(ant.current_node)
                         break
 
@@ -92,21 +103,25 @@ class Aco:
 
                     ant.edges.append(ant.current_node + next)
 
+                    if not (ant.current_node + '-' + next) in self.edges_to_update:
+                        self.edges_to_update.append(ant.current_node + '-' + next)
+
                     ant.tour_length += edge[self.weight]
 
                     ant.current_node = next
 
                     if ant.current_node == target:
                         ant.visited_nodes.append(ant.current_node)
-                        # cada formiga constroi sua solucao
                         ant.new_solution(ant.visited_nodes, ant.tour_length)
 
                         if not best_ant:
                             best_ant = ant
-                        elif ant.tour_length < best_ant.tour_length:
+                        elif ant.tour_length < best_ant.cost:
                             best_ant = ant
 
                         break
+                
+                # print 'Seq time: ' + str(time.time()-s_time)
 
             # atualiza feromonios
             self.update_pheromone(best_ant)
@@ -122,7 +137,7 @@ class Aco:
             result = None
 
             for neighbor in self.graph.edge[current_node]:
-                 if not neighbor in ant.visited_nodes:
+                 if not neighbor in ant.visited_nodes and not neighbor in self.irregular_nodes:
 
                     prob = self.node_probability(current_node, neighbor, ant)
 
@@ -161,26 +176,26 @@ class Aco:
 
     # atualizacao de feromonio por max-min(MMAS)
     def update_pheromone(self, best_ant):
-        for i in self.graph.edge:
-            for j in self.graph.edge[i]:
 
-                edge = self.graph.edge[i][j]
+        for e in self.edges_to_update:
+            i, j = e.split('-')
+            edge = self.graph.edge[i][j]
 
-                pheromone = edge['pheromone']
-                sum = 0
-                delta  = 0
+            pheromone = edge['pheromone']
+            sum = 0
+            delta  = 0
 
-                if best_ant:
-                    if i+j in best_ant.edges:
-                        delta = 1.0 / best_ant.cost
+            if best_ant:
+                if i+j in best_ant.edges:
+                    delta = 1.0 / best_ant.cost
 
-                edge['pheromone'] = (1.0 - self.evaporation) * pheromone + delta
+            edge['pheromone'] = (1.0 - self.evaporation) * pheromone + delta
 
-                if edge['pheromone'] < self.min_pheromone:
-                    edge['pheromone'] = self.min_pheromone
+            if edge['pheromone'] < self.min_pheromone:
+                edge['pheromone'] = self.min_pheromone
 
-                if edge['pheromone'] > self.max_pheromone:
-                    edge['pheromone'] = self.max_pheromone
+            if edge['pheromone'] > self.max_pheromone:
+                edge['pheromone'] = self.max_pheromone
 
     def get_distance(self, source, target):
         edge = self.graph.edge[source][target]
@@ -188,6 +203,8 @@ class Aco:
         return edge[self.weight]
 
     def get_solution(self):
+
+        #  f = open(os.path.join(dir, '../out/test.txt'), 'w')
 
         solution, cost = None, None
 

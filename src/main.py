@@ -2,6 +2,7 @@ import graph as graph
 import time
 import pickle
 from aco import *
+import p_aco as paco
 
 class Main:
 
@@ -14,27 +15,33 @@ class Main:
 
         elapsed_time = time.time() - start_time
 
-        print("Time build graph %.2f seconds.", elapsed_time)
+        print "Time build graph %.2f seconds." % elapsed_time
 
-        # gp.draw_graph()
+        print "Nodes: %.1f Edges: %.1f" % (gp.graph.number_of_nodes(), gp.graph.number_of_edges())
 
         # while True:
             # input = raw_input('Nodos(origem,destino) >>')
             # args = input.split(',')
         # args = ['1S0','8S37']
         args = ['1S0','1S9']
-        print 'A* Menor caminho DISTANCIA(path, custo):', gp.astar(args[0], args[1], 'weight')
-        print 'A* Menor caminho TEMPO(path, custo):', gp.astar(args[0], args[1], 'travelTime')
 
         start_time = time.time()
-        aco = Aco(gp.graph, 0.0003123, 1, 5, 0.5)
-        print 'ACO Menor caminho DISTANCIA(path, custo) ,', aco.run(50, args[0], args[1], 'weight'), 'Run Time: ' + str(time.time()-start_time)
+        print 'A* Menor caminho DISTANCIA(path, custo):', gp.astar(args[0], args[1], 'weight'), 'Run Time: ' + str(time.time()-start_time)
+        # print 'A* Menor caminho TEMPO(path, custo):', gp.astar(args[0], args[1], 'travelTime')
 
         start_time = time.time()
-        aco = Aco(gp.graph, 0.0003123, 1, 5, 0.5)
-        print 'ACO Menor caminho TEMPO(path, custo) ,', aco.run(50, args[0], args[1], 'travelTime'), 'Run Time: ' + str(time.time()-start_time)
+        aco = Aco(gp.graph, 0.0003123, 0.1, 1, 0.5)
+        print 'ACO Menor caminho DISTANCIA(path, custo):', aco.run(100, args[0], args[1], 'weight'), 'Run Time: ' + str(time.time()-start_time)
 
-        # gp.draw_graph()
+        # start_time = time.time()
+        # aco = paco.Aco(gp.graph, 0.0003123, 0.5, 1.2, 0.4)
+        # print 'P_ACO Menor caminho DISTANCIA(path, custo) ,', aco.run(1000, args[0], args[1], 'weight'), 'Run Time: ' + str(time.time()-start_time)
+
+        # start_time = time.time()
+        # aco = paco.Aco(gp.graph, 0.0003123, 0.5, 1.2, 0.4)
+        # print 'ACO Menor caminho TEMPO(path, custo) ,', aco.run(100, args[0], args[1], 'travelTime'), 'Run Time: ' + str(time.time()-start_time)
+
+        gp.draw_graph()
         
 if __name__ == "__main__":
     Main()
