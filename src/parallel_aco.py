@@ -8,6 +8,8 @@ import time
 
 dir = os.path.dirname(__file__)
 
+MAX_THREADS = 10
+
 class Ant:
 
     def __init__(self, current_node):
@@ -79,12 +81,12 @@ class Aco:
         for i in range(10):
             threads = []
 
-            num_p = num_ants / 10
+            ants_per_thread = num_ants / MAX_THREADS
             ant_index = 0
 
-            for p in range(10):
-                threads.append(Thread(target=self.construct_solution, args=(i, ant_index, source, target, weight, l,)))
-                ant_index += num_p
+            for p in range(MAX_THREADS):
+                threads.append(Thread(target=self.construct_solution, args=(ant_index, ants_per_thread, source, target, weight, l,)))
+                ant_index += ants_per_thread
 
             for t in threads:
                 t.start()
@@ -97,11 +99,11 @@ class Aco:
 
         return self.get_solution()
 
-    def construct_solution(self, it, ant_index, source, target, weight, lock):
+    def construct_solution(self, ant_index, num_ants, source, target, weight, lock):
 
         s_time = time.time()
 
-        for a in range(ant_index, ant_index+10):
+        for a in range(ant_index, ant_index + num_ants):
             
             ant = self.ants[a]
 
