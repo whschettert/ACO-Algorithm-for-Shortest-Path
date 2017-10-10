@@ -1,4 +1,5 @@
 from aco import *
+import parallel_aco as p_aco
 import random
 import graph as graph
 import time
@@ -25,7 +26,9 @@ class RandParam:
         # amostras
         for r in range(0, 10):
 
-            num_ants = random.randint(50, 150)
+            print 'Amostra %d' % r
+
+            num_ants = random.randrange(1000, 1200, 10)
 
             init_pheromone = random.uniform(0.0001, 0.0002)
 
@@ -59,7 +62,7 @@ class RandParam:
                 # cada caminho roda 10 vezes
                 for i in range(0, 10):
 
-                    aco = Aco(self.gp.graph, init_pheromone, alpha, beta, evaporation)
+                    aco = p_aco.Aco(self.gp.graph, init_pheromone, alpha, beta, evaporation)
                     
                     start_time = time.time()
 
