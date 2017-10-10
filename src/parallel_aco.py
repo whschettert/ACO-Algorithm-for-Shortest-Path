@@ -66,10 +66,10 @@ class Aco:
 
         self.graph = copy.copy(self.c_graph)
 
-        # inicializa ferominios
-        for i in self.graph.edge:
-            for j in self.graph.edge[i]:
-                self.graph.edge[i][j]['pheromone'] = self.initial_pheromone
+        # inicializa feromonios
+        for i in self.graph.succ:
+            for j in self.graph.succ[i]:
+                self.graph.succ[i][j]['pheromone'] = self.initial_pheromone
 
         self.weight = weight
 
@@ -107,7 +107,7 @@ class Aco:
 
             ant.reset(source)
                     
-            for e in range(len(self.graph.edges())):
+            for e in range(self.graph.number_of_edges()):
 
                 ant.visited_nodes.append(ant.current_node)
 
@@ -123,7 +123,7 @@ class Aco:
                     self.edges_to_update.append(ant.current_node + '-' + next)
                 lock.release()
 
-                edge = self.graph.edge[ant.current_node][next]
+                edge = self.graph.succ[ant.current_node][next]
 
                 ant.edges.append(ant.current_node + next)
 
@@ -147,13 +147,13 @@ class Aco:
 
     def select_next_node(self, current_node, ant):
 
-        if len(self.graph.edge[current_node]) == 0:
+        if len(self.graph.succ[current_node]) == 0:
             return None
         else:
             best = -1
             result = None
 
-            for neighbor in self.graph.edge[current_node]:
+            for neighbor in self.graph.succ[current_node]:
                  if not neighbor in ant.visited_nodes and not neighbor in self.irregular_nodes:
 
                     prob = self.node_probability(current_node, neighbor, ant)
@@ -178,14 +178,14 @@ class Aco:
         sum = 0.0
 
         for node in unvisited_nodes:
-            pheromone = self.graph.edge[current_node][node]['pheromone']
+            pheromone = self.graph.succ[current_node][node]['pheromone']
             distance = self.get_distance(current_node, node)
             sum += (math.pow(pheromone, self.alpha) * math.pow(1.0 / distance, self.beta))
 
         if sum == 0:
             sum = 1
 
-        pheromone = self.graph.edge[current_node][target_node]['pheromone']
+        pheromone = self.graph.succ[current_node][target_node]['pheromone']
 
         prob = (math.pow(pheromone, self.alpha) * math.pow(1.0 / distance, self.beta)) / sum
 
@@ -197,7 +197,7 @@ class Aco:
         for e in self.edges_to_update:
             i, j = e.split('-')
 
-            edge = self.graph.edge[i][j]
+            edge = self.graph.succ[i][j]
 
             pheromone = edge['pheromone']
             sum = 0
@@ -216,7 +216,7 @@ class Aco:
                 edge['pheromone'] = self.max_pheromone
 
     def get_distance(self, source, target):
-        edge = self.graph.edge[source][target]
+        edge = self.graph.succ[source][target]
 
         return edge[self.weight]
 

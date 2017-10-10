@@ -22,21 +22,21 @@ class Main:
         # while True:
             # input = raw_input('Nodos(origem,destino) >>')
             # args = input.split(',')
-        # args = ['1S0','8S37']
+        args = ['1S0','8S37']
         # args = ['1S0','1S9']
-        args = ['260S4', '374S0']
+        # args = ['260S4', '374S0']
 
         start_time = time.time()
         print 'A* Menor caminho DISTANCIA(path, custo):', gp.astar(args[0], args[1], 'weight'), 'Run Time: ' + str(time.time()-start_time)
         # print 'A* Menor caminho TEMPO(path, custo):', gp.astar(args[0], args[1], 'travelTime')
 
         start_time = time.time()
-        aco = paco.Aco(gp.graph, 0.0003123, 0.1, 1, 0.5)
-        print 'P_ACO Menor caminho DISTANCIA(path, custo) ,', aco.run(1000, args[0], args[1], 'weight'), 'Run Time: ' + str(time.time()-start_time)
+        aco = Aco(gp.graph, 0.0003123, 0.1, 1, 0.5)
+        print 'ACO Menor caminho DISTANCIA(path, custo):', aco.run(10, args[0], args[1], 'weight'), 'Run Time: ' + str(time.time()-start_time)
 
         start_time = time.time()
-        aco = Aco(gp.graph, 0.0003123, 0.1, 1, 0.5)
-        print 'ACO Menor caminho DISTANCIA(path, custo):', aco.run(1000, args[0], args[1], 'weight'), 'Run Time: ' + str(time.time()-start_time)
+        aco = paco.Aco(gp.graph, 0.0003123, 0.5, 1.2, 0.4)
+        print 'P_ACO Menor caminho DISTANCIA(path, custo) ,', aco.run(1000, args[0], args[1], 'weight'), 'Run Time: ' + str(time.time()-start_time)
 
         # start_time = time.time()
         # aco = paco.Aco(gp.graph, 0.0003123, 0.5, 1.2, 0.4)
