@@ -1,14 +1,14 @@
 import math
 import random
 import copy
-from threading import Thread, Lock
+from multiprocessing import Process
 
 import os
 import time
 
 dir = os.path.dirname(__file__)
 
-MAX_THREADS = 10
+MAX_PROCS = 4
 
 class Ant:
 
@@ -17,7 +17,6 @@ class Ant:
         self.visited_nodes = []
         self.edges = []
         self.tour_length = 0
-        self.valid = False
 
         self.solution_path = []
         self.cost = None
@@ -27,7 +26,6 @@ class Ant:
         self.visited_nodes = []
         self.edges = []
         self.tour_length = 0
-        self.valid = False
 
     def new_solution(self, path, cost):
         if not self.cost or cost < self.cost:
@@ -54,15 +52,11 @@ class Aco:
 
         self.ants = []
 
-        self.edges_to_update = []
-
         self.irregular_nodes = []
 
     def run(self, num_ants, source, target, weight):
 
-        threads = []
-
-        l = Lock()
+        procs = []
 
         self.best_ant = None
 
@@ -79,27 +73,27 @@ class Aco:
             self.ants.append(Ant(source))
 
         for i in range(10):
-            threads = []
+            procs = []
 
-            ants_per_thread = num_ants / MAX_THREADS
+            ants_per_proc = num_ants / MAX_PROCS
             ant_index = 0
 
-            for p in range(MAX_THREADS):
-                threads.append(Thread(target=self.construct_solution, args=(ant_index, ants_per_thread, source, target, weight, l,)))
-                ant_index += ants_per_thread
+            for p in range(MAX_PROCS):
+                procs.append(Process(target=self.construct_solution, args=(ant_index, ants_per_proc, source, target, weight,)))
+                ant_index += ants_per_proc
 
-            for t in threads:
+            for t in procs:
                 t.start()
 
-            for t in threads:
+            for t in procs:
                 t.join()
 
             # atualiza feromonios
-            self.update_pheromone(self.best_ant)
+            self.update_pheromone()
 
         return self.get_solution()
 
-    def construct_solution(self, ant_index, num_ants, source, target, weight, lock):
+    def construct_solution(self, ant_index, num_ants, source, target, weight):
 
         s_time = time.time()
 
@@ -116,14 +110,9 @@ class Aco:
                 next = self.select_next_node(ant.current_node, ant)
 
                 # Grafo irregular, caminho sem saida
-                if not next or next in self.irregular_nodes:
-                    self.irregular_nodes.append(ant.current_node)
+                if not next:
+                #     self.irregular_nodes.append(ant.current_node)
                     break
-                
-                lock.acquire()
-                if not (ant.current_node + '-' + next) in self.edges_to_update:
-                    self.edges_to_update.append(ant.current_node + '-' + next)
-                lock.release()
 
                 edge = self.graph.succ[ant.current_node][next]
 
@@ -136,16 +125,8 @@ class Aco:
                 if ant.current_node == target:
                     ant.visited_nodes.append(ant.current_node)
                     ant.new_solution(ant.visited_nodes, ant.tour_length)
-                    
-                    lock.acquire()
-                    if not self.best_ant:
-                            self.best_ant = ant
-                    elif ant.tour_length < self.best_ant.cost:
-                        self.best_ant = ant
-                    lock.release()
                     break
         # print 'IT %d ant %d Time: %.2f ' % (it, ant_index, time.time() - s_time)
-
 
     def select_next_node(self, current_node, ant):
 
@@ -156,7 +137,7 @@ class Aco:
             result = None
 
             for neighbor in self.graph.succ[current_node]:
-                 if not neighbor in ant.visited_nodes and not neighbor in self.irregular_nodes:
+                 if not neighbor in ant.visited_nodes:
 
                     prob = self.node_probability(current_node, neighbor, ant)
 
@@ -194,28 +175,39 @@ class Aco:
         return prob
 
     # atualizacao de feromonio por max-min(MMAS)
-    def update_pheromone(self, best_ant):
+    def update_pheromone(self):
 
-        for e in self.edges_to_update:
-            i, j = e.split('-')
+        best_ant = None
 
-            edge = self.graph.succ[i][j]
+        for ant in self.ants:
+            if not len(ant.solution_path) > 0:
+                continue
 
-            pheromone = edge['pheromone']
-            sum = 0
-            delta  = 0
+            if not best_ant:
+                best_ant = ant
+            elif ant.cost < best_ant.cost:
+                best_ant = ant
 
-            if best_ant:
-                if i+j in best_ant.edges:
-                    delta = 1.0 / best_ant.cost
+        for i in self.graph.succ:
+            for j in self.graph.succ[i]:
 
-            edge['pheromone'] = (1.0 - self.evaporation) * pheromone + delta
+                edge = self.graph.succ[i][j]
 
-            if edge['pheromone'] < self.min_pheromone:
-                edge['pheromone'] = self.min_pheromone
+                pheromone = edge['pheromone']
+                sum = 0
+                delta  = 0
 
-            if edge['pheromone'] > self.max_pheromone:
-                edge['pheromone'] = self.max_pheromone
+                if best_ant:
+                    if i+j in best_ant.edges:
+                        delta = 1.0 / best_ant.cost
+
+                edge['pheromone'] = (1.0 - self.evaporation) * pheromone + delta
+
+                if edge['pheromone'] < self.min_pheromone:
+                    edge['pheromone'] = self.min_pheromone
+
+                if edge['pheromone'] > self.max_pheromone:
+                    edge['pheromone'] = self.max_pheromone
 
     def get_distance(self, source, target):
         edge = self.graph.succ[source][target]
