@@ -127,11 +127,20 @@ class Graph:
         # tempo de viagem em segundos
         return (dist / med_speed) * 3600
 
-    def draw_graph(self):
+    def draw_graph(self, path=None):
         if (len(self.graph) < 2000):
             pos = nx.get_node_attributes(self.graph,'pos')
-            nx.draw_networkx(self.graph, pos)
-            labels = nx.get_edge_attributes(self.graph,'weight')
+            labels = None
+
+            if path:
+                node_colors = ["blue" if n in path else "red" for n in self.graph.nodes()] 
+                nx.draw_networkx_nodes(self.graph, pos=pos, node_color=node_colors)
+                nx.draw_networkx_edges(self.graph, pos=pos)
+                labels = nx.get_edge_attributes(self.graph,'pheromone')
+            else:
+                nx.draw_networkx(self.graph, pos)
+                labels = nx.get_edge_attributes(self.graph,'weight')
+
             nx.draw_networkx_edge_labels(self.graph, pos,edge_labels=labels)
 
             plt.xlabel('Latitude', fontsize=23)
@@ -139,7 +148,7 @@ class Graph:
 
             plt.show()
         else:
-            print('Nodes :', len(self.graph))    
+            print('Nodes :', len(self.graph))
 
     def save(self, max_routes):
         f = open(os.path.join(dir, '../data/graph.txt'), 'w')
