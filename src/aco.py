@@ -11,7 +11,7 @@ class Ant:
 
     def __init__(self, current_node):
         self.current_node = current_node
-        self.visited_nodes = []
+        self.visited_nodes = [current_node]
         self.edges = []
         self.tour_length = 0
         self.valid = False
@@ -21,7 +21,7 @@ class Ant:
 
     def reset(self, current_node):
         self.current_node = current_node
-        self.visited_nodes = []
+        self.visited_nodes = [current_node]
         self.edges = []
         self.tour_length = 0
         self.valid = False
@@ -37,7 +37,7 @@ class Aco:
 
         self.initial_pheromone = initial_pheromone
 
-        self.min_pheromone = 0.1
+        self.min_pheromone = 1.0e-20
 
         self.max_pheromone = 10
 
@@ -51,9 +51,7 @@ class Aco:
 
         self.ants = []
 
-        self.edges_to_update = []
-
-        self.irregular_nodes = []
+        self.frequency = dict()
 
     def run(self, num_ants, source, target, weight):
 
@@ -62,18 +60,17 @@ class Aco:
 
         self.graph = copy.copy(self.c_graph)
 
-        # inicializa ferominios
+        # inicializa feromonios
         for i in self.graph.succ:
             for j in self.graph.succ[i]:
                 self.graph.succ[i][j]['pheromone'] = self.initial_pheromone
 
         self.weight = weight
 
-        for i in range(10):
-
-            # for ant in self.ants:
-            #     ant.reset(source)
+        # iteracoes
+        for i in range(100):
             
+            # melhor formiga para MMAS
             best_ant = None
 
             # cada formiga constroi solucao
@@ -85,43 +82,34 @@ class Aco:
                 ant = self.ants[a]
 
                 ant.reset(source)
-                
-                s_time = time.time()
 
-                for e in range(self.graph.number_of_edges()):
-
-                    ant.visited_nodes.append(ant.current_node)
+                while ant.current_node != target:
 
                     next = self.select_next_node(ant.current_node, ant)
 
                     # Grafo irregular, caminho sem saida
-                    if not next or next in self.irregular_nodes:
-                        self.irregular_nodes.append(ant.current_node)
+                    if not next:
+                        if len(ant.visited_nodes) > 1:
+                            self.graph.remove_edge(ant.visited_nodes[-2], ant.visited_nodes[-1])
                         break
 
                     edge = self.graph.succ[ant.current_node][next]
 
                     ant.edges.append(ant.current_node + next)
 
-                    if not (ant.current_node + '-' + next) in self.edges_to_update:
-                        self.edges_to_update.append(ant.current_node + '-' + next)
-
                     ant.tour_length += edge[self.weight]
+
+                    ant.visited_nodes.append(next)
 
                     ant.current_node = next
 
                     if ant.current_node == target:
-                        ant.visited_nodes.append(ant.current_node)
                         ant.new_solution(ant.visited_nodes, ant.tour_length)
 
                         if not best_ant:
                             best_ant = ant
                         elif ant.tour_length < best_ant.cost:
                             best_ant = ant
-
-                        break
-                
-                # print 'Seq time: ' + str(time.time()-s_time)
 
             # atualiza feromonios
             self.update_pheromone(best_ant)
@@ -137,15 +125,22 @@ class Aco:
             result = None
 
             for neighbor in self.graph.succ[current_node]:
-                 if not neighbor in ant.visited_nodes and not neighbor in self.irregular_nodes:
-
+                 if not neighbor in ant.visited_nodes:
+                    
                     prob = self.node_probability(current_node, neighbor, ant)
 
                     if prob > best:
                         best = prob
                         result = neighbor
-                    elif prob == best and random.randint(0, 10) > 5:
+                    elif prob == best and random.uniform(0, 1) > 0.5:
                         result = neighbor
+
+                    # # Adicionado um pouco de aleatoriedade a escolha do caminho
+                    # if random.uniform(0, 1) > 0.7:
+                    #     best = 1
+                    #     result = neighbor
+        if result:
+            self.frequency[current_node+result] += 1
 
         return result
 
@@ -169,33 +164,42 @@ class Aco:
             sum = 1
 
         pheromone = self.graph.succ[current_node][target_node]['pheromone']
+        distance = self.get_distance(current_node, node)
 
         prob = (math.pow(pheromone, self.alpha) * math.pow(1.0 / distance, self.beta)) / sum
+
+        # adicionando aleatoriedade a escolha de um caminho, evitando um otimo local
+        if not current_node+target_node in self.frequency:
+            self.frequency[current_node+target_node] = 0
+        
+        if self.frequency[current_node+target_node] < 3:
+            return 1
 
         return prob
 
     # atualizacao de feromonio por max-min(MMAS)
     def update_pheromone(self, best_ant):
 
-        for e in self.edges_to_update:
-            i, j = e.split('-')
-            edge = self.graph.succ[i][j]
+        for i in self.graph.succ:
+            for j in self.graph.succ[i]:
+            
+                edge = self.graph.succ[i][j]
 
-            pheromone = edge['pheromone']
-            sum = 0
-            delta  = 0
+                pheromone = edge['pheromone']
+                sum = 0
+                delta  = 0
 
-            if best_ant:
-                if i+j in best_ant.edges:
-                    delta = 1.0 / best_ant.cost
+                if best_ant:
+                    if i+j in best_ant.edges:
+                        delta = 1.0 / best_ant.tour_length
 
-            edge['pheromone'] = (1.0 - self.evaporation) * pheromone + delta
+                edge['pheromone'] = (1.0 - self.evaporation) * pheromone + delta
 
-            if edge['pheromone'] < self.min_pheromone:
-                edge['pheromone'] = self.min_pheromone
+                if edge['pheromone'] < self.min_pheromone:
+                    edge['pheromone'] = self.min_pheromone
 
-            if edge['pheromone'] > self.max_pheromone:
-                edge['pheromone'] = self.max_pheromone
+                if edge['pheromone'] > self.max_pheromone:
+                    edge['pheromone'] = self.max_pheromone
 
     def get_distance(self, source, target):
         edge = self.graph.succ[source][target]
