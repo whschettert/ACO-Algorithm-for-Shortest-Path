@@ -28,6 +28,7 @@ class Graph:
             return
 
         lastNode = None
+        routes = None
 
         if (max_routes > 0):
             routes = data.ROUTES.head(max_routes)
@@ -68,11 +69,11 @@ class Graph:
             
             n, dist = util.medium_point(self.graph, node_data)
 
-            if n and not self.nodes_connected(node, n['data'][0]) and not self.nodes_connected(n['data'][0], node):
+            if n and not self.nodes_connected(node, n['data'][0]) and node_data[5] != n['data'][5]:
+                # media de tempo de caminhada
                 time = dist / 0.00166667
                 # duas arestas direcionais
                 self.graph.add_edge(node_data[0], n['data'][0], weight=dist, travelTime=time)
-                self.graph.add_edge(n['data'][0], node_data[0], weight=dist, travelTime=time)
         
         self.save(max_routes)
 
@@ -196,3 +197,19 @@ class Graph:
             self.graph.add_edge(args[0], args[1], weight=float(args[2]), travelTime=float(args[3]))
 
         f.close()
+
+    # get cost path
+    def compute_path(self, path, weight):
+        cost = 0.0
+        for i in range(len(path)):
+
+            s = path[i]
+            
+            if s == path[-1]:
+                break
+
+            t = path[i+1]
+
+            cost += self.graph.succ[s][t][weight]
+
+        return cost
