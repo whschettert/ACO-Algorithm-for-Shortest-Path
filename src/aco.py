@@ -12,19 +12,18 @@ class Ant:
     def __init__(self, current_node):
         self.current_node = current_node
         self.visited_nodes = [current_node]
-        self.edges = []
+        self.visited_edges = []
         self.tour_length = 0
-        self.valid = False
 
+        # best solution in all iterations
         self.solution_path = []
         self.cost = None
 
     def reset(self, current_node):
         self.current_node = current_node
         self.visited_nodes = [current_node]
-        self.edges = []
+        self.visited_edges = []
         self.tour_length = 0
-        self.valid = False
 
     def new_solution(self, path, cost):
         if not self.cost or cost < self.cost:
@@ -50,8 +49,6 @@ class Aco:
         self.c_graph = graph
 
         self.ants = []
-
-        self.frequency = dict()
 
     def run(self, num_ants, source, target, weight):
 
@@ -89,13 +86,14 @@ class Aco:
 
                     # Grafo irregular, caminho sem saida
                     if not next:
+                        # remove aresta para nodo terminal
                         if len(ant.visited_nodes) > 1:
                             self.graph.remove_edge(ant.visited_nodes[-2], ant.visited_nodes[-1])
                         break
 
                     edge = self.graph.succ[ant.current_node][next]
 
-                    ant.edges.append(ant.current_node + next)
+                    ant.visited_edges.append(ant.current_node + next)
 
                     ant.tour_length += edge[self.weight]
 
@@ -132,18 +130,11 @@ class Aco:
                     if prob > best:
                         best = prob
                         result = neighbor
-                    elif prob == best and random.uniform(0, 1) > 0.5:
+                    elif prob == best and random.uniform(0, 1) > 0.5: #quando empate de probabilidade, decisao radomica
                         result = neighbor
-
-                    # # Adicionado um pouco de aleatoriedade a escolha do caminho
-                    # if random.uniform(0, 1) > 0.7:
-                    #     best = 1
-                    #     result = neighbor
-        if result:
-            self.frequency[current_node+result] += 1
-
         return result
 
+    # compute node probability
     def node_probability(self, current_node, target_node, ant):
 
         if target_node in ant.visited_nodes:
@@ -168,13 +159,6 @@ class Aco:
 
         prob = (math.pow(pheromone, self.alpha) * math.pow(1.0 / distance, self.beta)) / sum
 
-        # adicionando aleatoriedade a escolha de um caminho, evitando um otimo local
-        if not current_node+target_node in self.frequency:
-            self.frequency[current_node+target_node] = 0
-        
-        if self.frequency[current_node+target_node] < 3:
-            return 1
-
         return prob
 
     # atualizacao de feromonio por max-min(MMAS)
@@ -190,7 +174,7 @@ class Aco:
                 delta  = 0
 
                 if best_ant:
-                    if i+j in best_ant.edges:
+                    if i+j in best_ant.visited_edges:
                         delta = 1.0 / best_ant.tour_length
 
                 edge['pheromone'] = (1.0 - self.evaporation) * pheromone + delta
@@ -207,9 +191,6 @@ class Aco:
         return edge[self.weight]
 
     def get_solution(self):
-
-        #  f = open(os.path.join(dir, '../out/test.txt'), 'w')
-
         solution, cost = None, None
 
         for ant in self.ants:
