@@ -110,11 +110,11 @@ class Aco:
 
                     ant.tour_length += self.graph.succ[ant.current_node][next][self.weight]
 
-                    ant.current_node = next
-
                     ant.visited_nodes.append(next)
 
                     ant.visited_edges.append(ant.current_node+next)
+
+                    ant.current_node = next
 
                     if ant.current_node == target:
                         
