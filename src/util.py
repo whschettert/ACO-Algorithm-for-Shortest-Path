@@ -11,7 +11,7 @@ def haversine(lat1, lon1, lat2, lon2):
     dlon = lon2 - lon1 
     dlat = lat2 - lat1 
     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-    h = 2 * AVG_EARTH_RADIUS * asin(sqrt(a)) 
+    h = (2 * asin(sqrt(a))) * AVG_EARTH_RADIUS
     return h
 
 def medium_point(graph, current):
