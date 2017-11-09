@@ -4,6 +4,7 @@ import os
 import random
 import time
 import util as util
+import numpy
 
 dir = os.path.dirname(__file__)
 
@@ -135,37 +136,93 @@ class Aco:
         if len(self.graph.succ[source]) == 0:
             return None
 
-        best = -1
-        result = None
-
+        nodes = []
+        probs = []
+ 
         for neighbor in self.graph.succ[source]:
             
-             if not neighbor in ant.visited_nodes:
-                 
-                current = self.compute_coefficient(source, neighbor, ant)
-
-                if current > best:
-                    best = current
-                    result = neighbor
-                elif current == best and random.uniform(0,1) > 0.5:
-                    result = neighbor
+            if neighbor in ant.visited_nodes:
+                continue
+                
+            nodes.append(neighbor)
+            probs.append(self.compute_coefficient(source, neighbor, ant))
         
-        return result
+        if not nodes:
+            return None
+
+        resp = numpy.random.choice(nodes, p=probs)
+
+        return str(resp)
 
     def compute_coefficient(self, current, next, ant):
+        
+        if next in ant.visited_nodes:
+            return 0
+
         edge = self.graph.succ[current][next]
 
-        if edge['pheromone'] == 0:
+        unvisited_nodes = list(set(self.graph.succ[current]) - set(ant.visited_nodes))
+
+        pheromone = 0
+        distance = 0
+        sum = 0.0
+
+        for node in unvisited_nodes:
+            pheromone = self.graph.succ[current][node]['pheromone']
+            sum += math.pow(pheromone, self.alpha)
+
+        if sum == 0:
+            sum = 1
+
+        pheromone = self.graph.succ[current][next]['pheromone']
+
+        prob = math.pow(pheromone, self.alpha) / sum
+
+        return prob
+
+        # if edge['pheromone'] == 0:
             
-            if not self.graph.node[next]['visited'] and not edge['visited']:
-                return math.pow(1.0/edge[self.weight], self.alpha) * math.pow((1 + self.beta), 2)
-            else:
-                return math.pow(edge[self.weight], self.alpha)
+        #     if not self.graph.node[next]['visited'] and not edge['visited']:
+                
+        #         # for node in unvisited_nodes:
+        #         #     distance = self.graph.succ[current][node][self.weight]
+        #         #     sum += math.pow(1.0 / distance, self.alpha) * math.pow((1 + self.beta), 2)
+
+        #         # if sum == 0:
+        #         #     sum = 1
+
+        #         distance = self.graph.succ[current][next][self.weight]
+
+        #         return (math.pow(1.0 / distance, self.alpha) * math.pow((1 + self.beta), 2))
+        #     else:
+                
+        #         # for node in unvisited_nodes:
+        #         #     distance = self.graph.succ[current][node][self.weight]
+        #         #     sum += math.pow(1.0 / distance, self.alpha)
+
+        #         # if sum == 0:
+        #         #     sum = 1
+
+        #         distance = self.graph.succ[current][next][self.weight]
+
+        #         return math.pow(1.0 / distance, self.alpha)
         
-        if ant.route_count < 3:
-            return 0
-        else:
-            return math.pow(edge['pheromone'], self.alpha) * math.pow(1.0/edge[self.weight], self.beta)
+        # if ant.route_count < 3:
+        #     return 0 # 1.0 / len(unvisited_nodes)
+        # else:
+            
+        #     # for node in unvisited_nodes:
+        #     #     pheromone = self.graph.succ[current][node]['pheromone']
+        #     #     distance = self.graph.succ[current][node][self.weight]
+        #     #     sum += (math.pow(pheromone, self.alpha) * math.pow(1.0 / distance, self.beta))
+
+        #     # if sum == 0:
+        #     #     sum = 1
+
+        #     pheromone = self.graph.succ[current][next]['pheromone']
+        #     # distance = self.graph.succ[current][next][self.weight]
+
+        #     return (math.pow(pheromone, self.alpha) * math.pow((1.0 + self.beta),2))
     
     def evaporate(self, best_ant):
 
