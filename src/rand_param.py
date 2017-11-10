@@ -99,9 +99,9 @@ class RandParam:
                     avg_result = sum(self.aco_result)/len(self.aco_result) 
                     std_dev = np.std(self.aco_result)
                 
-                f.write('Best result: ' + str(best_result) + ' - Average Result: ' + str(avg_result) + ' - Standard Deviation: ' + str(std_dev) + ' - time to run all tests: ' + str(time.time() - start_run_time) )
+                f.write('Best result: ' + str(best_result) + ' - Average Result: ' + str(avg_result) + ' - Standard Deviation: ' + str(std_dev) + ' - time to run all tests: ' + str(time.time() - start_run_time) + '\n')
 
-        f.write('TOTAL RUNNING TIME: ' + str(time.time() - start_run_time))
+        f.write('TOTAL RUNNING TIME: ' + str(time.time() - time_for_route))
 
         f.close()
 
