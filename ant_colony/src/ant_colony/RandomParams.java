@@ -93,7 +93,7 @@ public class RandomParams {
 				
 				parametersRunTime = System.currentTimeMillis();
 				
-				for (int j=0 ; j<10; j++) {
+				for (int j=0 ; j<5; j++) {
 					double t1, t2;
 					
 					t1 = System.currentTimeMillis();

@@ -22,18 +22,17 @@ public class TestParams {
 		
 		ArrayList<Tuple<Tuple<Integer, Integer>, Params>> dists_nodes = new ArrayList<>();
 		
-		
 		dists_nodes.addAll(Arrays.asList(
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(10,14), new Params(11000, 500, 0.004540868901943936, 4.2248581533066485, 0.09846346784814608, 0.7380338544701056, "", "")),
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(20,24), new Params(11000, 500, 0.00057428336323527, 1.40113839186818,  	0.671867740355784,	0.932520435189094, "", "")),
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(30,34), new Params(16000, 500, 0.00938973013753504, 4.89074108324041, 0.236287969061914, 0.70157055583896, "", "")),
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(40,44), new Params(17000, 500, 0.00357954034147196, 4.75812603323567, 2.50055407112918, 0.764991688847031, "", "")),
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(50,54), new Params(17000, 500, 0.00601493670647097, 0.42515935150438, 0.0248860232737169, 0.904061270232578, "", "")),
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(60,64), new Params(14000, 500, 0.00379520320924374, 1.81887566191999, 0.0252688911255433, 0.644589642143173, "", "")),
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(70,74), new Params(11000, 500, 0.00173846712644101, 4.66500425419624, 0.204994981834971, 0.893953894928224, "", "")),
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(80,84), new Params(13000, 500, 0.000426261492134647, 4.08933257373996, 0.0964400208487564, 0.688435080629192, "", "")),
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(90,94), new Params(11000, 500, 0.00266975604879154, 1.02266783665256, 0.0417999511611427, 0.358615034407506, "", "")),
-				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(100,104), new Params(11000, 500, 0.00492663697122965, 2.13472992853583, 0.666989318093701, 0.329770983735447, "", ""))
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(10,14), new Params(11000, 500, 0.00454086890194393, 4.22485815330664, 0.098463467848146, 0.738033854470105, "398S5", "423S4")),
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(20,24), new Params(11000, 500, 0.00057428336323527, 1.40113839186818, 0.671867740355784,	0.932520435189094, "439S1", "525S9")),
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(30,34), new Params(16000, 500, 0.00938973013753504, 4.89074108324041, 0.236287969061914, 0.70157055583896, "591S48", "416S27")),
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(40,44), new Params(17000, 500, 0.00357954034147196, 4.75812603323567, 2.50055407112918, 0.764991688847031, "311S13", "363S19")),
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(50,54), new Params(17000, 500, 0.00601493670647097, 0.42515935150438, 0.0248860232737169, 0.904061270232578, "98S8", "591S63")),
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(60,64), new Params(14000, 500, 0.00379520320924374, 1.81887566191999, 0.0252688911255433, 0.644589642143173, "564S2", "637S19")),
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(70,74), new Params(11000, 500, 0.00173846712644101, 4.66500425419624, 0.204994981834971, 0.893953894928224, "527S8", "591S86")),
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(80,84), new Params(13000, 500, 0.000426261492134647, 4.08933257373996, 0.0964400208487564, 0.688435080629192, "490S8", "637S26")),
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(90,94), new Params(11000, 500, 0.00266975604879154, 1.02266783665256, 0.0417999511611427, 0.358615034407506, "464S17", "637S26")),
+				new Tuple<Tuple<Integer, Integer>, Params>(new Tuple<Integer, Integer>(100,104), new Params(11000, 500, 0.00492663697122965, 2.13472992853583, 0.666989318093701, 0.329770983735447, "604S1", "637S31"))
 				));
 		
 		String source, target = null;
@@ -60,16 +59,19 @@ public class TestParams {
 		double timeAllTests = System.currentTimeMillis();
 		
 		while(dists_nodes.size() > 0) {
-			Tuple<Tuple<Integer, Integer>, Params> dist = dists_nodes.get(0);
-			source = nodes.get(rn.nextInt(nodes.size()));
-			target = nodes.get(rn.nextInt(nodes.size()));
+			// para quando ja possui os pares
+			arr_nodes.add(dists_nodes.remove(0).getE2());
 			
-			if (validatePair(g.nodes.get(source), g.nodes.get(target), dist)) {
-				dist.getE2().source = source;
-				dist.getE2().target = target;
-				arr_nodes.add(dist.getE2());
-				dists_nodes.remove(0);
-			}
+			// pares gerados aleatoriamente
+//			Tuple<Tuple<Integer, Integer>, Params> dist = dists_nodes.get(0);
+//			source = nodes.get(rn.nextInt(nodes.size()));
+//			target = nodes.get(rn.nextInt(nodes.size()));
+//			if (validatePair(g.nodes.get(source), g.nodes.get(target), dist)) {
+//				dist.getE2().source = source;
+//				dist.getE2().target = target;
+//				arr_nodes.add(dist.getE2());
+//				dists_nodes.remove(0);
+//			}
 		}
 		
 		for (Params param : arr_nodes) {
@@ -93,7 +95,7 @@ public class TestParams {
 				t1 = System.currentTimeMillis();
 				
 				AntColonyOptimization aco = new AntColonyOptimization(new Graph(param.initialPheromone), 
-						param.numAnts, 500, param.alpha, param.beta, param.evaporation, "weight", param.source);
+						param.numAnts, 500, param.alpha, param.beta, param.evaporation, "travelTime", param.source);
 				
 				Tuple<Double, ArrayList<String>> result = aco.run(param.target);
 				

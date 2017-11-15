@@ -46,14 +46,6 @@ public class Edge {
 		return travelTime;
 	}
 
-	public void setWeight(double weight) {
-		this.weight = weight;
-	}
-
-	public void setTravelTime(double travelTime) {
-		this.travelTime = travelTime;
-	}
-
 	public double getPheromone() {
 		return pheromone;
 	}

@@ -17,9 +17,13 @@ public class Graph {
 	
 	private Util util;
 	
+	public double initialPheromone;
+	
 	public Graph(double initialPheromone) throws IOException {
 		
 		util = new Util(); 
+		
+		this.initialPheromone = initialPheromone;
 		
 		String path = "../data/graph_test.txt";
 		
