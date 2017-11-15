@@ -22,14 +22,7 @@ public class RandomParams {
 		util = new Util();
 		
 		dists_nodes.addAll(Arrays.asList(
-				new Tuple<Integer,Integer>(10,14),
-				new Tuple<Integer,Integer>(20,24),
-				new Tuple<Integer,Integer>(30,34),
-				new Tuple<Integer,Integer>(40,44),
-				new Tuple<Integer,Integer>(50,54),
-				new Tuple<Integer,Integer>(60,64),
 				new Tuple<Integer,Integer>(70,74),
-				new Tuple<Integer,Integer>(80,84),
 				new Tuple<Integer,Integer>(90,94),
 				new Tuple<Integer,Integer>(100,104)));
 	}
@@ -61,16 +54,28 @@ public class RandomParams {
 		ArrayList<Tuple<Double, ArrayList<String>>> acoResultClean;
 		ArrayList<Tuple<Double, ArrayList<String>>> acoResults;
 		
+		arr_nodes.addAll(Arrays.asList(
+				new Tuple<Node,Node>(g.nodes.get("39S1"), g.nodes.get("61S0")),
+				new Tuple<Node,Node>(g.nodes.get("241S1"), g.nodes.get("160S11")),
+				new Tuple<Node,Node>(g.nodes.get("458S2"), g.nodes.get("57S5")),
+				new Tuple<Node,Node>(g.nodes.get("174S5"), g.nodes.get("232S43")),
+				new Tuple<Node,Node>(g.nodes.get("641S3"), g.nodes.get("174S10")),
+				new Tuple<Node,Node>(g.nodes.get("42S0"), g.nodes.get("37S23")),
+				new Tuple<Node,Node>(g.nodes.get("41S26"), g.nodes.get("130S15")),
+				new Tuple<Node,Node>(g.nodes.get("625S9"), g.nodes.get("130S17")),
+				new Tuple<Node,Node>(g.nodes.get("253S2"), g.nodes.get("130S22")),
+				new Tuple<Node,Node>(g.nodes.get("162S8"), g.nodes.get("130S27"))));
+		
 		double parametersRunTime = 0;
 		double timeAllTests = System.currentTimeMillis();
 		
-		while(arr_nodes.size() < 10) {
-			source = nodes.get(rn.nextInt(nodes.size()));
-			target = nodes.get(rn.nextInt(nodes.size()));
-			
-			if (g.checkValidPair(g.nodes.get(source), g.nodes.get(target), dists_nodes))
-				arr_nodes.add(new Tuple<Node, Node>(g.nodes.get(source), g.nodes.get(target)));
-		}
+//		while(arr_nodes.size() < 10) {
+//			source = nodes.get(rn.nextInt(nodes.size()));
+//			target = nodes.get(rn.nextInt(nodes.size()));
+//			
+//			if (g.checkValidPair(g.nodes.get(source), g.nodes.get(target), dists_nodes))
+//				arr_nodes.add(new Tuple<Node, Node>(g.nodes.get(source), g.nodes.get(target)));
+//		}
 		
 		for (Tuple<Node,Node> nodePair : arr_nodes) {
 			
@@ -97,7 +102,7 @@ public class RandomParams {
 					double t1, t2;
 					
 					t1 = System.currentTimeMillis();
-					AntColonyOptimization aco = new AntColonyOptimization(new Graph(init_pheromone), numAnts, 500, alpha, beta, evaporation, "weight", nodePair.getE1().getName());
+					AntColonyOptimization aco = new AntColonyOptimization(new Graph(init_pheromone), numAnts, 500, alpha, beta, evaporation, "travelTime", nodePair.getE1().getName());
 					Tuple<Double, ArrayList<String>> result = aco.run(nodePair.getE2().getName());
 					t2 = System.currentTimeMillis();
 					if (result.getE2().size() > 0)

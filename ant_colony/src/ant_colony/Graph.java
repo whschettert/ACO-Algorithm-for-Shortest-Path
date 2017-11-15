@@ -25,7 +25,7 @@ public class Graph {
 		
 		this.initialPheromone = initialPheromone;
 		
-		String path = "../data/graph_test.txt";
+		String path = "../data/graph_params.txt";
 		
 		FileReader fr = new FileReader(path);
 		
