@@ -7,27 +7,15 @@ public class Main {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
-		Graph gp = new Graph("graph.txt", 0);
+		Graph gp = new Graph("graph_params.txt", 0);
 		
 		Util util = new Util();
 		
-		new RandomParams().run();
-		
-//		for (int i=0;i<20;i++) {
-//			System.out.println(util.randRange(0.2, 0.95));
-//		}
-		
-//		if (true)
-//			return;
+//		new RandomParams().run();
 
-		System.out.printf("Nodes: %d Edges: %d\n", gp.nodes.size(), gp.edges.size());
-		
-//		
-		
-//		String ar[] = {"10S10", "130S21"};
-//		String ar[] = {"90S0", "219S7"};
-//		String ar[] = {"1S0", "8S37"};
-		String ar[] = {"7S3", "104S9"};
+		System.out.printf("Nodes: %d Edges: %d\n", gp.nodes.size(), gp.edges.size());		
+
+		String ar[] = {"53S4", "246S3"};
 		
 		double best = Double.MAX_VALUE;
 		
@@ -37,7 +25,7 @@ public class Main {
 			double t1, t2;
 			
 			t1 = System.currentTimeMillis();
-			AntColonyOptimization aco = new AntColonyOptimization(new Graph("graph.txt", 0.0001), 10000, 500, 1, 0.5, 0.5, "weight", ar[0]);
+			AntColonyOptimization aco = new AntColonyOptimization(new Graph("graph_test.txt", 0.004540868901943936), 20000, 500, 2.3, 0, 0.7380338544701056, "weight", ar[0]);
 			Tuple<Double, ArrayList<String>> result = aco.run(ar[1]);
 			t2 = System.currentTimeMillis();
 			if (result.getE2().size() > 0) {

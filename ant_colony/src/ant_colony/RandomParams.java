@@ -79,7 +79,6 @@ public class RandomParams {
 			f.println("Source, Target " + nodePair + " -: " + 
 			util.haversine(nodePair.getE1().getLatitude(), nodePair.getE1().getLongitude(), nodePair.getE2().getLatitude(), nodePair.getE2().getLongitude()));
 			
-			parametersRunTime = System.currentTimeMillis();
 			for (int i = 0; i < 20; i++) {
 				System.out.println("Amostra " + i);
 				
@@ -94,11 +93,13 @@ public class RandomParams {
 				
 				acoResults = new ArrayList<>();
 				
+				parametersRunTime = System.currentTimeMillis();
+				
 				for (int j=0 ; j<10; j++) {
 					double t1, t2;
 					
 					t1 = System.currentTimeMillis();
-					AntColonyOptimization aco = new AntColonyOptimization(new Graph("graph.txt", init_pheromone), numAnts, 500, alpha, beta, evaporation, "weight", nodePair.getE1().getName());
+					AntColonyOptimization aco = new AntColonyOptimization(new Graph("graph_params.txt", init_pheromone), numAnts, 500, alpha, beta, evaporation, "weight", nodePair.getE1().getName());
 					Tuple<Double, ArrayList<String>> result = aco.run(nodePair.getE2().getName());
 					t2 = System.currentTimeMillis();
 					if (result.getE2().size() > 0)

@@ -20,7 +20,7 @@ public class Graph {
 		
 		util = new Util(); 
 		
-		String path = getClass().getResource("graph.txt").getPath();
+		String path = "../data/" + filename;
 		
 		FileReader fr = new FileReader(path);
 		
