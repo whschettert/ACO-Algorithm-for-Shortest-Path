@@ -26,19 +26,31 @@ class Main:
         # while True:
             # input = raw_input('Nodos(origem,destino) >>')
             # args = input.split(',')
-        args = ['1S0','8S37']
-        # args = ['221S6', '157S13']
-        # args = ['260S4', '374S0']
-        # args = ['42S5', '458S17']
+        # args = ['1S0','8S37']
+
+        nodes = [
+            ['610S1', '503S3'],
+            ['8S18', '549S6'],
+            ['340S14', '610S2'],
+            ['439S1', '504S39'],
+            ['628S13', '436S12'],
+            ['65S8', '559S14'],
+            ['540S2', '559S2'],
+            ['427S23', '637S25'],
+            ['332S13', '637S27'],
+            ['472S7', '637S28']]
 
         # print gp.compute_path(['1S0', '1S1', '1S2', '415S10', '415S11', '1S3', '1S4', '1S5', '1S6', '1S7', '1S8', '1S9', '288S12', '8S15', '8S16', '8S18', '8S19', '8S20', '8S21', '8S22', '8S23', '8S24', '8S25', '8S26', '8S27', '8S28', '8S29', '8S30', '8S31', '8S32', '418S2', '8S33', '8S34', '8S35', '8S36', '8S37'],'weight')
 
         # start_time = time.time()
-        star_path, cost = gp.astar(args[0], args[1], 'weight')
-        print 'A*: (custo, path):', cost, star_path
+        for n in nodes:
+            star_path, cost = gp.astar(n[0], n[1], 'weight')
+            print 'A*: (custo, path):', cost, star_path
 
-        dij, cost = star_path, cost = gp.dj(args[0], args[1], 'weight')
-        print 'Dijkstra*: (custo, path):', cost, star_path
+            dij, cost = gp.dj(n[0], n[1], 'weight')
+            print 'Dijkstra: (custo, path):', cost, dij
+
+            print ''
 
 
 
