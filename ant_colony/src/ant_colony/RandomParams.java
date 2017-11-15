@@ -18,7 +18,7 @@ public class RandomParams {
 	
 	ArrayList<Tuple<Integer, Integer>> dists_nodes = new ArrayList<Tuple<Integer,Integer>>();
 	
-	public RandomParams() {
+	public RandomParams() throws IOException {
 		util = new Util();
 		
 		dists_nodes.addAll(Arrays.asList(
@@ -34,10 +34,8 @@ public class RandomParams {
 				new Tuple<Integer,Integer>(100,104)));
 	}
 	
-	
-	
 	public void run() throws IOException, InterruptedException {
-		g = new Graph("graph.txt", 0.0001);
+		g = new Graph(0.0001);
 		
 		String source, target = null;
 		
@@ -70,7 +68,7 @@ public class RandomParams {
 			source = nodes.get(rn.nextInt(nodes.size()));
 			target = nodes.get(rn.nextInt(nodes.size()));
 			
-			if (checkValidPair(g.nodes.get(source), g.nodes.get(target)))
+			if (g.checkValidPair(g.nodes.get(source), g.nodes.get(target), dists_nodes))
 				arr_nodes.add(new Tuple<Node, Node>(g.nodes.get(source), g.nodes.get(target)));
 		}
 		
@@ -99,7 +97,7 @@ public class RandomParams {
 					double t1, t2;
 					
 					t1 = System.currentTimeMillis();
-					AntColonyOptimization aco = new AntColonyOptimization(new Graph("graph_params.txt", init_pheromone), numAnts, 500, alpha, beta, evaporation, "weight", nodePair.getE1().getName());
+					AntColonyOptimization aco = new AntColonyOptimization(new Graph(init_pheromone), numAnts, 500, alpha, beta, evaporation, "weight", nodePair.getE1().getName());
 					Tuple<Double, ArrayList<String>> result = aco.run(nodePair.getE2().getName());
 					t2 = System.currentTimeMillis();
 					if (result.getE2().size() > 0)
@@ -134,29 +132,7 @@ public class RandomParams {
 		f.close();
 	}
 	
-	public boolean checkValidPair(Node source, Node target) {
-		
-		if (!g.hasPath(source,  target))
-			return false;
-		
-		double haversine = util.haversine(source.getLatitude(), source.getLongitude(), target.getLatitude(), target.getLongitude());
-		
-		int index = -1;
-		
-		for (int i=0; i<dists_nodes.size();i++) {
-			if (dists_nodes.get(i).getE1() <= haversine && haversine <= dists_nodes.get(i).getE2()) {
-				index = i;
-				break;
-			}
-		}
-		
-		if (index >= 0) {
-			dists_nodes.remove(index);
-			return true;
-		}
-		
-		return false;
-	}
+	
 	
 	
 
