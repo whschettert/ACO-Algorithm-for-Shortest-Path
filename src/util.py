@@ -24,5 +24,9 @@ def medium_point(graph, current):
 
 def time_diff(time1, time2):
     FMT = '%H:%M:%S'
-    tdelta = datetime.strptime(time2, FMT) - datetime.strptime(time1, FMT)
+    tdelta = 0.0
+    if datetime.strptime(time2, FMT) < datetime.strptime(time1, FMT):
+        tdelta = datetime.strptime(time1, FMT) - datetime.strptime(time2, FMT)
+    else:
+        tdelta = datetime.strptime(time2, FMT) - datetime.strptime(time1, FMT)
     return tdelta.seconds

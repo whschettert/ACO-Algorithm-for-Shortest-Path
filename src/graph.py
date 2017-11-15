@@ -10,7 +10,7 @@ import os
 
 dir = os.path.dirname(__file__)
 
-GRAPH_PATH = '../data/graph.txt'
+GRAPH_PATH = '../data/graph_full.txt'
 
 class Graph:
 
@@ -62,8 +62,10 @@ class Graph:
 
                     if lastNode is not None:
                         wgt = util.haversine(lastNode[3], lastNode[4], st[3], st[4])
+
                         time = util.time_diff(lastNode[7], st[7])
                         if lastNode[0] != st[0]:
+                            
                             self.graph.add_edge(lastNode[0], st[0], weight=wgt, travelTime=time)
 
                     lastNode = st
@@ -78,8 +80,9 @@ class Graph:
             n, dist = util.medium_point(self.graph, node_data)
 
             if n and not self.nodes_connected(node, n['data'][0]) and node_data[5] != n['data'][5]:
+
                 # media de tempo de caminhada, 6kmh
-                time = (dist * 3600) / 6
+                time = ((dist * 3600) / 6.0)
 
                 # duas arestas direcionais
                 self.graph.add_edge(node_data[0], n['data'][0], weight=dist, travelTime=time)
@@ -188,7 +191,7 @@ class Graph:
 
         for i in self.graph.edge:
             for j in self.graph.edge[i]:
-
+                
                 f.write(i + '|' + j + '|' + str(self.graph.edge[i][j]['weight']) + '|' + str(self.graph.edge[i][j]['travelTime']) + '\n')
 
         f.close()
