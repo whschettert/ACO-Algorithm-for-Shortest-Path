@@ -2,12 +2,18 @@ package ant_colony;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Util {
     
 	private static final int EARTH_RADIUS = 6371; // Approx Earth radius in KM
+	
+	
+	public Util() {
+
+	}
 
     public double haversine(double startLat, double startLong, double endLat, double endLong) {
 
@@ -107,7 +113,7 @@ public class Util {
         return temp/(size-1);
     }
 
-	 public double getStdDev(ArrayList<Tuple<Double, ArrayList<String>>> data)
+    public double getStdDev(ArrayList<Tuple<Double, ArrayList<String>>> data)
     {
 	    int size = data.size();
 	    
