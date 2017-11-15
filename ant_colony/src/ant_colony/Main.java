@@ -2,22 +2,45 @@ package ant_colony;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Main {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
-		Graph gp = new Graph("graph_params.txt", 0);
-		
-		Util util = new Util();
+		Graph gp = new Graph(0);
 		
 //		new RandomParams().run();
 
 		System.out.printf("Nodes: %d Edges: %d\n", gp.nodes.size(), gp.edges.size());		
-
-		String ar[] = {"53S4", "246S3"};
 		
 		double best = Double.MAX_VALUE;
+		
+		ArrayList<Node> nodes = new ArrayList<>(gp.nodes.values());
+		
+		Node source = null, target = null;
+		
+		ArrayList<Tuple<Integer, Integer>> dists_nodes = new ArrayList<Tuple<Integer,Integer>>();
+		dists_nodes.add(new Tuple<Integer, Integer>(10,14));
+		
+		Random rn = new Random();
+		
+		while(source == null) {
+			source = nodes.get(rn.nextInt(nodes.size()));
+			target = nodes.get(rn.nextInt(nodes.size()));
+			
+			if (!gp.checkValidPair(source, target, dists_nodes)) {
+				source = null;
+				target = null;
+			}
+			else
+				break;
+		}
+		
+//		String ar[] = {"425S7", "310S12"};
+		String ar[] = {source.getName(), target.getName()};
+		
+		System.out.println("Source, Target: " + source + ", " + target);
 		
 		for  (int i=0; i<10;i++) {
 			System.out.println("Amostra " + i);
@@ -25,7 +48,7 @@ public class Main {
 			double t1, t2;
 			
 			t1 = System.currentTimeMillis();
-			AntColonyOptimization aco = new AntColonyOptimization(new Graph("graph_test.txt", 0.004540868901943936), 20000, 500, 2.3, 0, 0.7380338544701056, "weight", ar[0]);
+			AntColonyOptimization aco = new AntColonyOptimization(new Graph(0.0049266369712296565 ), 11000, 500, 2.1347299285358345, 0.6669893180937014, 0.3297709837354471, "weight", ar[0]);
 			Tuple<Double, ArrayList<String>> result = aco.run(ar[1]);
 			t2 = System.currentTimeMillis();
 			if (result.getE2().size() > 0) {

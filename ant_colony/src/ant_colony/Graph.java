@@ -3,6 +3,7 @@ package ant_colony;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,11 +17,11 @@ public class Graph {
 	
 	private Util util;
 	
-	public Graph(String filename, double initialPheromone) throws IOException {
+	public Graph(double initialPheromone) throws IOException {
 		
 		util = new Util(); 
 		
-		String path = "../data/" + filename;
+		String path = "../data/graph_test.txt";
 		
 		FileReader fr = new FileReader(path);
 		
@@ -55,7 +56,6 @@ public class Graph {
 		
 		br.close();
 		fr.close();
-		
 	}
 	
 	public Edge findEdge(Node n1, Node n2) {
@@ -69,8 +69,6 @@ public class Graph {
 		
 		Node current = source;
 		double heuristic = 0;
-		
-		
 		
 		while(true) {
 			visited.put(current.getName(), current);
@@ -107,8 +105,30 @@ public class Graph {
 			return 0;
 		}
 
+	}
+	
+    public boolean checkValidPair(Node source, Node target, ArrayList<Tuple<Integer, Integer>> dists_nodes) {
 		
+		if (!hasPath(source,  target))
+			return false;
 		
+		double haversine = util.haversine(source.getLatitude(), source.getLongitude(), target.getLatitude(), target.getLongitude());
+		
+		int index = -1;
+		
+		for (int i=0; i<dists_nodes.size();i++) {
+			if (dists_nodes.get(i).getE1() <= haversine && haversine <= dists_nodes.get(i).getE2()) {
+				index = i;
+				break;
+			}
+		}
+		
+		if (index >= 0) {
+			dists_nodes.remove(index);
+			return true;
+		}
+		
+		return false;
 	}
 
 }
