@@ -79,56 +79,54 @@ public class TestParams {
 			
 			f.println("Ants:" + param.numAnts + " - Pheromone:" + param.initialPheromone + " - Alpha:" + param.alpha + " - Beta:" + param.beta + " - Evaporation:" + param.evaporation);
 			
+			parametersRunTime = System.currentTimeMillis();
+			
+			acoResults = new ArrayList<>();
+			
 			for (int i = 0; i < 10; i++) {
 				System.out.println("Amostra " + i);
 				
 				f.println("AMOSTRAGEM " + i);
-
-				acoResults = new ArrayList<>();
 				
-				parametersRunTime = System.currentTimeMillis();
+				double t1, t2;
 				
-				for (int j=0 ; j<10; j++) {
-					double t1, t2;
-					
-					t1 = System.currentTimeMillis();
-					
-					AntColonyOptimization aco = new AntColonyOptimization(new Graph(param.initialPheromone), 
-							param.numAnts, 500, param.alpha, param.beta, param.evaporation, "weight", param.source);
-					
-					Tuple<Double, ArrayList<String>> result = aco.run(param.target);
-					
-					t2 = System.currentTimeMillis();
-					
-					if (result.getE2().size() > 0)
-						f.printf("Cost: %2f - Path: %s", result.getE1(), result.getE2().toString());
-					else
-						f.printf("Sem solucao");
-					
-					f.printf("Run time: %2f \n", (t2-t1)/1000);
-						
-					acoResults.add(result);
-				}
+				t1 = System.currentTimeMillis();
 				
-				acoResultClean = new ArrayList<>();
-				for (Tuple<Double, ArrayList<String>> tuple : acoResults) {
-					if (tuple.getE2().size() == 0)
-						continue;
-					acoResultClean.add(tuple);
-				}
+				AntColonyOptimization aco = new AntColonyOptimization(new Graph(param.initialPheromone), 
+						param.numAnts, 500, param.alpha, param.beta, param.evaporation, "weight", param.source);
 				
-				if (acoResultClean.size() > 0) {
-					bestResult = util.min(acoResultClean);
-					avgResult = util.sum(acoResultClean)/acoResultClean.size();
-					stdResult = util.getStdDev(acoResultClean);
-				}
+				Tuple<Double, ArrayList<String>> result = aco.run(param.target);
 				
-				f.printf("Best result: %2f - Average Result: %2f - Standard Deviation: %2f - Run time: %2f\n", bestResult, avgResult, stdResult, (System.currentTimeMillis()-parametersRunTime)/1000);
-				f.flush();
+				t2 = System.currentTimeMillis();
+				
+				if (result.getE2().size() > 0)
+					f.printf("Cost: %2f - Path: %s", result.getE1(), result.getE2().toString());
+				else
+					f.printf("Sem solucao");
+				
+				f.printf("Run time: %2f \n", (t2-t1)/1000);
+					
+				acoResults.add(result);
 			}
 			
-			f.printf("TOTAL RUNNING TIME: %2f\n", (System.currentTimeMillis() - timeAllTests)/1000);
+			acoResultClean = new ArrayList<>();
+			for (Tuple<Double, ArrayList<String>> tuple : acoResults) {
+				if (tuple.getE2().size() == 0)
+					continue;
+				acoResultClean.add(tuple);
+			}
+			
+			if (acoResultClean.size() > 0) {
+				bestResult = util.min(acoResultClean);
+				avgResult = util.sum(acoResultClean)/acoResultClean.size();
+				stdResult = util.getStdDev(acoResultClean);
+			}
+			
+			f.printf("Best result: %2f - Average Result: %2f - Standard Deviation: %2f - Run time: %2f\n\n", bestResult, avgResult, stdResult, (System.currentTimeMillis()-parametersRunTime)/1000);
+			f.flush();
 		}
+		
+		f.printf("TOTAL RUNNING TIME: %2f\n", (System.currentTimeMillis() - timeAllTests)/1000);
 		
 		f.close();
 	}
