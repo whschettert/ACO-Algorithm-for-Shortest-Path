@@ -17,10 +17,10 @@ class Graph:
         # self.nodes_dict = dict()
         # self.nodes_dict_rev = dict()
 
-    def build_graph_stop_points(self, max_routes, offset=0):
+    def build_graph_stop_points(self, max_routes, last=0):
         
         # carrega grafo salvo de arquivo, mais rapido
-        f = open(os.path.join(dir, '../data/graph.txt'), 'r')
+        f = open(os.path.join(dir, '../data/graph_test.txt'), 'r')
         graph_data = f.readline()
         f.close()
         if len(graph_data) > 0 and max_routes == int(graph_data):    
@@ -32,8 +32,14 @@ class Graph:
 
         routes = data.ROUTES.sort_values('route_id')
 
-        if (max_routes > 0):
-            routes = routes.head(max_routes)
+        if max_routes > 0:
+            if last > 0:
+                routes = routes.tail(last)
+            else:
+                routes = routes.head(max_routes)
+        elif last > 0:
+            routes = routes.tail(last)
+            
 
         for rt in routes.values:
             
