@@ -20,7 +20,7 @@ class Graph:
     def build_graph_stop_points(self, max_routes, offset=0):
         
         # carrega grafo salvo de arquivo, mais rapido
-        f = open(os.path.join(dir, '../data/graph.txt'), 'r')
+        f = open(os.path.join(dir, '../data/graph_test.txt'), 'r')
         graph_data = f.readline()
         f.close()
         if len(graph_data) > 0 and max_routes == int(graph_data):    
@@ -95,6 +95,25 @@ class Graph:
             else:
                 resp = nx.astar_path(self.graph, n1, n2, self.h_time, weight)
                 length = nx.astar_path_length(self.graph, n1, n2,  self.h_time, weight)
+
+        except nx.NetworkXNoPath:
+             print 'Nao ha caminho entre os nodos'
+             resp = []
+        finally:
+            return resp, length
+
+    def dj(self, n1, n2, weight='weight'):
+        resp = None
+        length = None
+
+        try:
+
+            if weight == 'weight':
+                resp = nx.dijkstra_path(self.graph, n1, n2, weight)
+                length = nx.dijkstra_path_length(self.graph, n1, n2, weight)
+            else:
+                resp = nx.dijkstra_path(self.graph, n1, n2, weight)
+                length = nx.dijkstra_path_length(self.graph, n1, n2, weight)
 
         except nx.NetworkXNoPath:
              print 'Nao ha caminho entre os nodos'
