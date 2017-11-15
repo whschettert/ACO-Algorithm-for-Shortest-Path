@@ -108,6 +108,25 @@ class Graph:
         finally:
             return resp, length
 
+    def dj(self, n1, n2, weight='weight'):
+        resp = None
+        length = None
+
+        try:
+
+            if weight == 'weight':
+                resp = nx.dijkstra_path(self.graph, n1, n2, weight)
+                length = nx.dijkstra_path_length(self.graph, n1, n2, weight)
+            else:
+                resp = nx.dijkstra_path(self.graph, n1, n2, weight)
+                length = nx.dijkstra_path_length(self.graph, n1, n2, weight)
+
+        except nx.NetworkXNoPath:
+             print 'Nao ha caminho entre os nodos'
+             resp = []
+        finally:
+            return resp, length
+
     def get_graph(self):
         return self.graph
 
