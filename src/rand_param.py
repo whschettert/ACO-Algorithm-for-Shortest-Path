@@ -43,27 +43,27 @@ class RandParam:
                 arr_nodes.append([source_node, target_node])
 
         # amostras
-        for r in range(0, 20):
+        for nodes in arr_nodes:
 
-            print 'Amostra %d' % r
-
-            num_ants = 100 #random.randrange(2500, 4000, 200)
-
-            init_pheromone = 0#random.uniform(0.0001, 0.0002)
-
-            alpha = random.uniform(0.5, 2)
-
-            beta = 0 #random.randint(1, 5)
-
-            evaporation = random.uniform(0.2, 0.8)
-
-            f.write('AMOSTRAGEM ' + str(r) + '\n')
-
-            f.write('Num Ants:' + str(num_ants) + ' - Init pheromone:' + str(init_pheromone) +  ' - Alpha:' + str(alpha) + ' - Beta:' + str(beta) + ' - Evaporation:' + str(evaporation) + '\n')
+            f.write('Source, Target ' + str(nodes) + ' - Dist: ' + str(self.gp.h_dist(nodes[0],nodes[1])) +'\n')
   
-            for nodes in arr_nodes:
+            for r in range(0, 20):
 
-                f.write('Source, Target ' + str(nodes) + '\n')
+                print 'Amostra %d' % r
+
+                num_ants = random.randrange(500, 1000, 100)
+
+                init_pheromone = random.uniform(0.00001, 0.001)
+
+                alpha = random.uniform(1, 3)
+
+                beta = 0 #random.randint(1, 5)
+
+                evaporation = random.uniform(0.4, 0.8)
+
+                f.write('AMOSTRAGEM ' + str(r) + '\n')
+
+                f.write('Num Ants:' + str(num_ants) + ' - Init pheromone:' + str(init_pheromone) +  ' - Alpha:' + str(alpha) + ' - Beta:' + str(beta) + ' - Evaporation:' + str(evaporation) + '\n')
                 
                 # f.write('A*: ' + str(self.gp.astar(nodes[0], nodes[1], 'weight')) + '\n')
 
@@ -76,7 +76,7 @@ class RandParam:
 
                     start_time = time.time()
                     
-                    aco = short_aco.Aco(self.gp.graph, num_ants, 200, init_pheromone, alpha, beta, evaporation, 'weight', nodes[0])
+                    aco = short_aco.Aco(self.gp.graph, num_ants, 100, init_pheromone, alpha, beta, evaporation, 'weight', nodes[0])
                     result = aco.run(nodes[1])
                     self.aco_result.append(result[1])
 
@@ -99,9 +99,9 @@ class RandParam:
                     avg_result = sum(self.aco_result)/len(self.aco_result) 
                     std_dev = np.std(self.aco_result)
                 
-                f.write('Best result: ' + str(best_result) + ' - Average Result: ' + str(avg_result) + ' - Standard Deviation: ' + str(std_dev) + ' - time to run all tests: ' + str(time.time() - start_run_time) )
+                f.write('Best result: ' + str(best_result) + ' - Average Result: ' + str(avg_result) + ' - Standard Deviation: ' + str(std_dev) + ' - time to run all tests: ' + str(time.time() - start_run_time) + '\n')
 
-        f.write('TOTAL RUNNING TIME: ' + str(time.time() - start_run_time))
+        f.write('TOTAL RUNNING TIME: ' + str(time.time() - time_for_route))
 
         f.close()
 

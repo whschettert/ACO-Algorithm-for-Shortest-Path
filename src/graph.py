@@ -30,10 +30,10 @@ class Graph:
         lastNode = None
         routes = None
 
+        routes = data.ROUTES.sort_values('route_id')
+
         if (max_routes > 0):
-            routes = data.ROUTES.head(max_routes)
-        else:
-            routes = data.ROUTES
+            routes = routes.head(max_routes)
 
         for rt in routes.values:
             
@@ -53,7 +53,7 @@ class Graph:
                     self.graph.add_node(st[0], pos=(st[3], st[4]), data=st)
 
                     if lastNode is not None:
-                        wgt = util.haversine(lastNode[4], lastNode[3], st[4], st[3])
+                        wgt = util.haversine(lastNode[3], lastNode[4], st[3], st[4])
                         time = util.time_diff(lastNode[7], st[7])
                         if lastNode[0] != st[0]:
                             self.graph.add_edge(lastNode[0], st[0], weight=wgt, travelTime=time)
