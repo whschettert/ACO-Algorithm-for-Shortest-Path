@@ -6,6 +6,10 @@ public class AntColonyOptimization {
 	
 	private static final int NUM_THREAD = Runtime.getRuntime().availableProcessors();
 	
+	private static final double MAX_PHEROMONE = 0.0225;
+	
+	private static final double MIN_PHEROMONE = 0.000015;
+	
 	private int numAnts;
 	
 	private int numIterations;
@@ -111,6 +115,8 @@ public class AntColonyOptimization {
 		return getSolution();
 	}
 	
+	double max = Double.MIN_VALUE;
+	
 	public void updatePheromone(Ant bestAnt) {
 		for (Edge edge : graph.edges.values()) {
 			
@@ -124,9 +130,17 @@ public class AntColonyOptimization {
 				
 			pheromone = (1.0 - evaporation) * pheromone + delta;
 			
-			// TODO
-			if (pheromone < 0.0000000000000000001)
-				pheromone = 0.00000001;
+			if (pheromone < MIN_PHEROMONE)
+				pheromone = MIN_PHEROMONE;
+			
+			if (pheromone > MAX_PHEROMONE)
+				pheromone = MAX_PHEROMONE;
+			
+//				
+//			if (pheromone > max) {
+//				max = pheromone;
+//				System.out.println("MAX: " + max);
+//			}
 			
 			edge.setPheromone(pheromone);
 		}
