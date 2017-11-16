@@ -10,7 +10,7 @@ import os
 
 dir = os.path.dirname(__file__)
 
-GRAPH_PATH = '../data/graph_full.txt'
+GRAPH_PATH = '../data/graph_test.txt'
 
 class Graph:
 
