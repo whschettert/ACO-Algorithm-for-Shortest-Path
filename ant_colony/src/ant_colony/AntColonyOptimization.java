@@ -136,12 +136,6 @@ public class AntColonyOptimization {
 			if (pheromone > MAX_PHEROMONE)
 				pheromone = MAX_PHEROMONE;
 			
-//				
-//			if (pheromone > max) {
-//				max = pheromone;
-//				System.out.println("MAX: " + max);
-//			}
-			
 			edge.setPheromone(pheromone);
 		}
 	}

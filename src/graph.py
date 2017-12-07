@@ -3,7 +3,6 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import data_import as data
 import util as util
-import maps as mpx
 import Queue
 import astar as ast
 import os
@@ -16,8 +15,6 @@ class Graph:
 
     def __init__(self):
         self.graph = nx.DiGraph()
-        # self.nodes_dict = dict()
-        # self.nodes_dict_rev = dict()
 
     def build_graph_stop_points(self, max_routes, last=0):
         
